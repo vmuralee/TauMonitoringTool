@@ -13,9 +13,9 @@ using RNode = ROOT::RDF::RNode;
 using Vec_t = const ROOT::RVec<float>&;
 using Vec_i = const ROOT::RVec<int>&;
 
-float ZInvariantMass(Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1,Vec_t pt_2, Vec_t eta_2, Vec_t phi_2, Vec_t mass_2) {
-    const ROOT::Math::PtEtaPhiMVector p1(pt_1[0], eta_1[0], phi_1[0], mass_1[0]);
-    const ROOT::Math::PtEtaPhiMVector p2(pt_2[0], eta_2[0], phi_2[0], mass_2[0]);
+float ZInvariantMass(int tau_i,int mu_i,Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1,Vec_t pt_2, Vec_t eta_2, Vec_t phi_2, Vec_t mass_2) {
+    const ROOT::Math::PtEtaPhiMVector p1(pt_1[tau_i], eta_1[tau_i], phi_1[tau_i], mass_1[tau_i]);
+    const ROOT::Math::PtEtaPhiMVector p2(pt_2[mu_i], eta_2[mu_i], phi_2[mu_i], mass_2[mu_i]);
     return (p1 + p2).M();
 }
 float deltaR(float eta_1, float eta_2, float phi_1, float phi_2){

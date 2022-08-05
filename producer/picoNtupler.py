@@ -44,6 +44,7 @@ df_tag = df.Filter("nMuon >= 1 && nTau >=1").Define("Muon_Index","MuonIndex(nTri
 df_mutau =  df_tag.Filter("Muon_Index >= 0").Define("Tau_Index","TauIndex(nTau,Tau_pt,Tau_eta,Tau_phi,Tau_mass,Tau_dz,nMuon,Muon_Index,Muon_pt,Muon_eta,Muon_phi,Muon_mass)")
 # select taus with DeepTauID 
 
+df_mutau_z = df_mutau.Filter("Tau_Index >=0").Define("m_vis","ZInvariantMass(Tau_Index,Muon_Index,Tau_pt,Tau_eta,Tau_phi,Tau_mass,Muon_pt,Muon_eta,Muon_phi,Muon_mass)")
 
 pass_ditau = "PassDiTauFilter(nTrigObj,TrigObj_id,TrigObj_filterBits,TrigObj_pt,TrigObj_eta,TrigObj_phi,Tau_pt[Tau_Index],Tau_eta[Tau_Index],Tau_phi[Tau_Index]) > 0 && Tau_Index >= 0"
 pass_mutau = "PassMuTauFilter(nTrigObj,TrigObj_id,TrigObj_filterBits,TrigObj_pt,TrigObj_eta,TrigObj_phi,Tau_pt[Tau_Index],Tau_eta[Tau_Index],Tau_phi[Tau_Index]) > 0 && Tau_Index >= 0"
@@ -61,7 +62,7 @@ else:
 
 tau_id   = "Tau_idDeepTau2017v2p1VSjet[0] >=16 && Tau_idDeepTau2017v2p1VSmu[0] >=8 && Tau_idDeepTau2017v2p1VSe[0] >=2"
 
-df_mutau_final = df_mutau.Filter("Tau_charge[Tau_Index] != Muon_charge[Tau_Index]").Define("tau_p4","Tau_p4(Tau_Index,Tau_pt,Tau_eta,Tau_phi,Tau_mass)").Define("muon_p4","Muon_p4(Muon_Index,Muon_pt,Muon_eta,Muon_phi,Muon_mass)").Define("btag_veto","PassBtagVeto(muon_p4,tau_p4,nJet,Jet_pt,Jet_eta,Jet_phi,Jet_mass,Jet_btagCSVV2)")
+df_mutau_final = df_mutau_z.Filter("(Tau_charge[Tau_Index] != Muon_charge[Tau_Index]) && m_vis > 40 && m_vis < 80").Define("tau_p4","Tau_p4(Tau_Index,Tau_pt,Tau_eta,Tau_phi,Tau_mass)").Define("muon_p4","Muon_p4(Muon_Index,Muon_pt,Muon_eta,Muon_phi,Muon_mass)").Define("btag_veto","PassBtagVeto(muon_p4,tau_p4,nJet,Jet_pt,Jet_eta,Jet_phi,Jet_mass,Jet_btagCSVV2)")
 
 df_pass= df_mutau_final.Filter(pass_probe+" && "+tau_id+" && btag_veto > 0.5").Define("tau_pt","LeadingTauPT(Tau_pt,Tau_eta,Tau_phi,Tau_mass,Tau_Index)")
 df_all = df_mutau_final.Filter(tau_id+" && btag_veto > 0.5").Define("tau_pt","LeadingTauPT(Tau_pt,Tau_eta,Tau_phi,Tau_mass,Tau_Index)")
