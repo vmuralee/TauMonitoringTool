@@ -12,6 +12,8 @@ parser.add_argument('--input', required=False, type=str, nargs='+', help="input 
 parser.add_argument('--channel', required=True, type=str, help="ditau,mutau or etau")
 parser.add_argument('--run', required=True, type=str, help="tau selection")
 parser.add_argument('--plot', required=True, type=str, help="plot name")
+parser.add_argument('--iseta',action='store_true', help="plot name")
+parser.add_argument('--var', required=True, type=str, help="tau_pt or tau_eta")
 
 args = parser.parse_args()
 
@@ -95,6 +97,6 @@ def CreateTurnOn(var_name,df_pass_var,df_all_var,is_eta,plotname):
     c.Delete 
 
 print("Creating TurnOn pT")
-CreateTurnOn("tau_pt",df_pass_var,df_all_var,False,args.plot)
+CreateTurnOn(args.var,df_pass_var,df_all_var,args.iseta,args.plot)
 # print("Creating TurnOn Eta")
 # CreateTurnOn("tau_eta",df_pass_var,df_all_var,True,"MuTau_eta")
