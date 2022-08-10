@@ -5,7 +5,7 @@ import ROOT
 
 # Enable multi-threading                                                                                                                                                                                    
 ROOT.ROOT.EnableImplicitMT()
-
+ROOT.gROOT.SetBatch(True)
 
 
 import argparse
@@ -24,7 +24,7 @@ args = parser.parse_args()
 
 core_dir = str(os.getcwd()).split('producer')
 
-Trigger_header_path = os.path.join(core_dir[0] +'interface' + os.sep,"picoNtupler.h")
+Trigger_header_path = os.path.join(core_dir[0] +'/interface' + os.sep,"picoNtupler.h")
 
 ROOT.gInterpreter.Declare('#include "{}"'.format(Trigger_header_path))
 
