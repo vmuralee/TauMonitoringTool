@@ -47,7 +47,7 @@ bool PassTagFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_
 int MuonIndex(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,UInt_t nMu,Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1,Vec_t pfIso){
   int mu_index = -1;
   if(nMu > 0){
-    for(int imu=0; imu <= nMu; imu++){
+    for(int imu = nMu - 1; imu >= 0; imu--){
       const ROOT::Math::PtEtaPhiMVector muon(pt_1[imu], eta_1[imu], phi_1[imu], mass_1[imu]);
       float mu_iso = pfIso[imu]/muon.Pt();
       if(muon.Pt() < 24)continue;
@@ -59,21 +59,39 @@ int MuonIndex(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t tri
   }
   return mu_index;
 }
-int TauIndex(UInt_t ntau,Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1,Vec_t dz_1,TLorentzVector muon_p4){
-    int tau_index = -1;
-    if(ntau > 0){
-      for (int itau = 0; itau <= ntau; itau++){
-	const ROOT::Math::PtEtaPhiMVector tau(pt_1[itau], eta_1[itau], phi_1[itau], mass_1[itau]);
-	if(dz_1[itau] > 0.2)continue;
-	if(deltaR(tau.Eta(),muon_p4.Eta(),tau.Phi(),muon_p4.Phi()) < 0.5)continue;
-	if(tau.Pt() < 18) continue;
-	if(std::fabs(tau.Eta()) > 2.1)continue; 
-	tau_index = itau;
-	
-      }  
-    }
-    return tau_index;
+int TauIndex(UInt_t ntau, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Vec_t dz_1, TLorentzVector muon_p4){
+  int tau_index = -1;
+  if(ntau > 0){
+    // for (int itau = 0; itau <= ntau; itau++){
+      for (int itau = ntau - 1; itau >= 0; itau--){
+      const ROOT::Math::PtEtaPhiMVector tau(pt_1[itau], eta_1[itau], phi_1[itau], mass_1[itau]);
+      if(dz_1[itau] > 0.2)continue;
+      if(deltaR(tau.Eta(), muon_p4.Eta(), tau.Phi(), muon_p4.Phi()) < 0.5) continue;
+      if(tau.Pt() < 18) continue;
+      if(std::fabs(tau.Eta()) > 2.1) continue; 
+      tau_index = itau;
+    }  
+  }
+  return tau_index;
 }
+
+// int JetIndex(UInt_t njet, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Vec_t pu_id, Vec_t jet_id, TLorentzVector muon_p4, TLorentzVector tau_p4){
+int JetIndex(UInt_t njet, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Vec_t jet_id, TLorentzVector muon_p4, TLorentzVector tau_p4){
+  int jet_index = -1;
+  if(njet > 0){
+    for (int ijet = njet - 1; ijet >= 0; ijet--){
+      const ROOT::Math::PtEtaPhiMVector jet(pt_1[ijet], eta_1[ijet], phi_1[ijet], mass_1[ijet]);
+      // if ((pu_id[ijet] < 4 && pt_1[ijet] <= 50) || jet_id[ijet] < 2) continue;
+      if (jet_id[ijet] < 2) continue;
+      if (deltaR(jet.Eta(), muon_p4.Eta(), jet.Phi(), muon_p4.Phi()) < 0.5) continue;
+      if (deltaR(jet.Eta(), tau_p4.Eta(), jet.Phi(), tau_p4.Phi()) < 0.5) continue;
+      if (jet.Pt() < 18) continue;
+      jet_index = ijet;
+    }  
+  }
+  return jet_index;
+}
+
 bool PassDiTauFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,float tau_pt,float tau_eta,float tau_phi){
    
    for(int it=0; it < ntrig; it++){
@@ -86,6 +104,20 @@ bool PassDiTauFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Ve
    }
   }
   return false;
+}
+
+bool PassDiTauJetFilter(UInt_t ntrig, Vec_i trig_id, Vec_i trig_bits, Vec_t trig_pt, Vec_t trig_eta, Vec_t trig_phi, float jet_pt, float jet_eta, float jet_phi){
+  for(int it = 0; it < ntrig; it++) {
+    const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it], trig_eta[it], trig_phi[it], 0);
+    float dR = deltaR(trig.Eta(), jet_eta, trig.Phi(), jet_phi);
+    if (dR < 0.5) {
+      // if((trig_bits[it] & 2097152) != 0 && trig_id[it] == 1){ 
+      // if(trig_id[it] == 1){ 
+        return true;
+      // }
+    }
+  }
+  return true; // FIXME when bits are added
 }
 
 bool PassMuTauFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,float tau_pt,float tau_eta,float tau_phi){
@@ -134,23 +166,15 @@ float LeadingTauEta(Vec_t tau_pt,Vec_t tau_eta,Vec_t tau_phi,Vec_t tau_m,int ind
   }
   return eta;
 }
-TLorentzVector Muon_p4(int muon_intex,Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1){
-  TLorentzVector vec_p4(0,0,0,0);
-  if(muon_intex >= 0){
-    const ROOT::Math::PtEtaPhiMVector muon(pt_1[muon_intex], eta_1[muon_intex], phi_1[muon_intex], mass_1[muon_intex]);
-    vec_p4.SetPtEtaPhiM(muon.Pt(),muon.Eta(),muon.Phi(),muon.M());
+TLorentzVector Obj_p4(int index,Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1){
+  TLorentzVector vec_p4(0, 0, 0, 0);
+  if(index >= 0){
+    const ROOT::Math::PtEtaPhiMVector p4(pt_1[index], eta_1[index], phi_1[index], mass_1[index]);
+    vec_p4.SetPtEtaPhiM(p4.Pt(), p4.Eta(), p4.Phi(), p4.M());
   }
   return vec_p4;
 }
 
-TLorentzVector Tau_p4(int tau_intex,Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1){
-  TLorentzVector vec_p4(0,0,0,0);
-  if(tau_intex >= 0){
-    const ROOT::Math::PtEtaPhiMVector tau(pt_1[tau_intex], eta_1[tau_intex], phi_1[tau_intex], mass_1[tau_intex]);
-    vec_p4.SetPtEtaPhiM(tau.Pt(),tau.Eta(),tau.Phi(),tau.M());
-  }
-  return vec_p4;
-}
 bool PassBtagVeto(TLorentzVector muon_p4, TLorentzVector tau_p4,UInt_t njet, Vec_t jet_pt, Vec_t jet_eta, Vec_t jet_phi, Vec_t jet_m, Vec_t Jet_btagCSVV2){
   if(njet > 0){
     for(int j = 0; j <= njet; j++){
