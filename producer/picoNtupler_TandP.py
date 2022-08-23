@@ -137,6 +137,15 @@ elif channel == 'VBFasymtau_uppertauleg':
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
                  CreateHistModel("numerator", args.iseta), args.var, 'weight')
 
+elif channel == 'VBFasymtau_lowertauleg':
+    df_TandP_num = df_TandP_den_filt.Define("pass_VBFasymtau_uppertauleg",\
+             "PassMuTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi, \
+              Tau_pt[Tau_Index], Tau_eta[Tau_Index], Tau_phi[Tau_Index])")
+
+    h_num_os = df_TandP_num.Filter("pass_VBFasymtau_uppertauleg > 0.5 && \
+                 HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1 == 1").Histo1D( \
+                 CreateHistModel("numerator", args.iseta), args.var, 'weight')
+
 elif channel == 'ditaujet_tauleg':
     df_TandP_num = df_TandP_den_filt.Define("pass_ditau",\
             "PassDiTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi, \
