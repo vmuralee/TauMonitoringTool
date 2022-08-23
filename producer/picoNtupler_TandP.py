@@ -78,8 +78,9 @@ df_probe_id = df_probe.Filter("Tau_Index >= 0 && \
 
 # Calculate Efficiency
 
+channel = args.channel
 # denominator histogram
-if args.channel != 'ditaujet_jetleg':
+if channel != 'ditaujet_jetleg':
     ## select mu-tau pair with os and ss events
     df_TandP_os = df_probe_id.Define('weight',\
                 "(Tau_charge[Tau_Index] != Muon_charge[Tau_Index]) ? 1. : -1.").Define("mT",\
@@ -108,7 +109,7 @@ else:
     h_den_os = df_TandP_den_filt.Histo1D(CreateHistModel("denominator", args.iseta), args.var)
 
 # numerator histogram
-if args.channel == 'ditau':
+if channel == 'ditau':
     df_TandP_num = df_TandP_den_filt.Define("pass_ditau",\
              "PassDiTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi, \
               Tau_pt[Tau_Index], Tau_eta[Tau_Index], Tau_phi[Tau_Index])")
@@ -118,7 +119,7 @@ if args.channel == 'ditau':
                  CreateHistModel("numerator", args.iseta), args.var, 'weight')
     # h = df_TandP_num.Histo1D('weight')
 
-elif args.channel == 'mutau':
+elif channel == 'mutau':
     df_TandP_num = df_TandP_den_filt.Define("pass_mutau",\
              "PassMuTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi, \
               Tau_pt[Tau_Index], Tau_eta[Tau_Index], Tau_phi[Tau_Index])")
@@ -127,7 +128,7 @@ elif args.channel == 'mutau':
                  HLT_IsoMu20_eta2p1_LooseDeepTauPFTauHPS27_eta2p1_CrossL1==1").Histo1D( \
                  CreateHistModel("numerator", args.iseta), args.var, 'weight')
 
-elif args.channel == 'ditaujet_tauleg':
+elif channel == 'ditaujet_tauleg':
     df_TandP_num = df_TandP_den_filt.Define("pass_ditau",\
             "PassDiTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi, \
              Tau_pt[Tau_Index], Tau_eta[Tau_Index], Tau_phi[Tau_Index])")
@@ -136,7 +137,7 @@ elif args.channel == 'ditaujet_tauleg':
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
                  CreateHistModel("numerator", args.iseta), args.var, 'weight')
 
-elif args.channel == 'ditaujet_jetleg':
+elif channel == 'ditaujet_jetleg':
     df_TandP_num = df_TandP_den_filt.Define("pass_ditau_jet",\
             "PassDiTauJetFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi, \
              Jet_pt[Jet_Index], Jet_eta[Jet_Index], Jet_phi[Jet_Index])")
@@ -168,5 +169,5 @@ else:
 label.SetTextSize(0.040); label.DrawLatex(0.100, 0.920, "#bf{CMS Run3 Data}")
 label.SetTextSize(0.030); label.DrawLatex(0.630, 0.920, "#sqrt{s} = 13.6 TeV, "+args.run)
 
-c.SaveAs("%s_%s.pdf" % (args.plot, args.channel))
+c.SaveAs("%s_%s.pdf" % (args.plot, channel))
 
