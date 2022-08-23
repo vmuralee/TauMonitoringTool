@@ -21,7 +21,7 @@ parser.add_argument('--var', required=True, type=str, help="tau_pt, tau_eta, jet
 
 args = parser.parse_args()
 channel = args.channel
-isEta = args.iseta
+iseta = args.iseta
 plottingVariable = args.var
 
 possibleChannels = ["ditau", "mutau", "etau", \
@@ -98,7 +98,7 @@ if channel != 'ditaujet_jetleg':
     df_TandP = df_TandP_os.Filter("mT < 30 && m_vis > 40 && m_vis < 80").Define("tau_pt",\
                                   "Tau_pt[Tau_Index]").Define("tau_eta", "Tau_eta[Tau_Index]")
     df_TandP_den_filt = df_TandP
-    h_den_os = df_TandP_den_filt.Histo1D(CreateHistModel("denominator", isEta), plottingVariable)
+    h_den_os = df_TandP_den_filt.Histo1D(CreateHistModel("denominator", iseta), plottingVariable)
 
 else:
     assert "jet" in plottingVariable 
@@ -114,7 +114,7 @@ else:
         ).Filter("Jet_Index >= 0").Define("jet_pt","Jet_pt[Jet_Index]").Define("jet_eta","Jet_eta[Jet_Index]")
 
     df_TandP_den_filt = df_TandP_den.Filter("pass_ditau > 0.5 && HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1 == 1")
-    h_den_os = df_TandP_den_filt.Histo1D(CreateHistModel("denominator", isEta), plottingVariable)
+    h_den_os = df_TandP_den_filt.Histo1D(CreateHistModel("denominator", iseta), plottingVariable)
 
 # define numerators used more than once below
 PassMuTauFilter = "PassMuTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, \
@@ -130,7 +130,7 @@ if channel == 'ditau':
     df_TandP_num = df_TandP_den_filt.Define("pass_ditau", PassDiTauFilter)
     h_num_os = df_TandP_num.Filter("pass_ditau > 0.5 && \
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", isEta), plottingVariable, 'weight')
+                 CreateHistModel("numerator", iseta), plottingVariable, 'weight')
     # h = df_TandP_num.Histo1D('weight')
 
 elif channel == 'mutau':
@@ -138,28 +138,28 @@ elif channel == 'mutau':
 
     h_num_os = df_TandP_num.Filter("pass_mutau > 0.5 && \
                  HLT_IsoMu20_eta2p1_LooseDeepTauPFTauHPS27_eta2p1_CrossL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", isEta), plottingVariable, 'weight')
+                 CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
 elif channel == 'VBFasymtau_uppertauleg':
     df_TandP_num = df_TandP_den_filt.Define("pass_VBFasymtau_uppertauleg", PassMuTauFilter)
 
     h_num_os = df_TandP_num.Filter("pass_VBFasymtau_uppertauleg > 0.5 && \
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", isEta), plottingVariable, 'weight')
+                 CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
 elif channel == 'VBFasymtau_lowertauleg':
     df_TandP_num = df_TandP_den_filt.Define("pass_VBFasymtau_uppertauleg", PassMuTauFilter)
 
     h_num_os = df_TandP_num.Filter("pass_VBFasymtau_uppertauleg > 0.5 && \
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", isEta), plottingVariable, 'weight')
+                 CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
 elif channel == 'ditaujet_tauleg':
     df_TandP_num = df_TandP_den_filt.Define("pass_ditau", PassDiTauFilter)
 
     h_num_os = df_TandP_num.Filter("pass_ditau > 0.5 && \
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", isEta), plottingVariable, 'weight')
+                 CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
 elif channel == 'ditaujet_jetleg':
     df_TandP_num = df_TandP_den_filt.Define("pass_ditau_jet",\
@@ -168,7 +168,7 @@ elif channel == 'ditaujet_jetleg':
 
     h_num_os = df_TandP_num.Filter("pass_ditau_jet > 0.5 && \
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_PFJet60_CrossL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", isEta), plottingVariable) 
+                 CreateHistModel("numerator", iseta), plottingVariable) 
 else:
     raise ValueError()
 
