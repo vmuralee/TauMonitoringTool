@@ -13,9 +13,9 @@ import argparse
 parser = argparse.ArgumentParser(description='Skim full tuple.')
 parser.add_argument('--input', required=False, type=str, nargs='+', help="input files")
 parser.add_argument('--channel', required=True, type=str, help="ditau, mutau, or etau")
-parser.add_argument('--run', required=True, type=str, help="tau selection")
+parser.add_argument('--run', required=True, type=str, help="runs or fill used (look at your input files)")
 parser.add_argument('--plot', required=True, type=str, help="plot name")
-parser.add_argument('--iseta',action='store_true', help="plot name")
+parser.add_argument('--iseta', action='store_true', help="plot name")
 parser.add_argument('--var', required=True, type=str, help="tau_pt, tau_eta, jet_pt, jet_eta")
 
 args = parser.parse_args()
@@ -27,7 +27,7 @@ plottingVariable = args.var
 
 core_dir = str(os.getcwd()).split('producer')
 
-Trigger_header_path = os.path.join(core_dir[0] +'/interface' + os.sep,"picoNtupler.h")
+Trigger_header_path = os.path.join(core_dir[0] + '/interface' + os.sep, "picoNtupler.h")
 
 ROOT.gInterpreter.Declare('#include "{}"'.format(Trigger_header_path))
 
@@ -185,7 +185,7 @@ elif(plottingVariable == "jet_eta"):
 else:
     label.DrawLatex(0.8, 0.03, "#eta_{#tau}")
 label.SetTextSize(0.040); label.DrawLatex(0.100, 0.920, "#bf{CMS Run3 Data}")
-label.SetTextSize(0.030); label.DrawLatex(0.630, 0.920, "#sqrt{s} = 13.6 TeV, "+args.run)
+label.SetTextSize(0.030); label.DrawLatex(0.630, 0.920, "#sqrt{s} = 13.6 TeV, " + args.run)
 
 c.SaveAs("%s_%s.pdf" % (args.plot, channel))
 
