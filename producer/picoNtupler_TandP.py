@@ -19,6 +19,9 @@ parser.add_argument('--iseta',action='store_true', help="plot name")
 parser.add_argument('--var', required=True, type=str, help="tau_pt, tau_eta, jet_pt, jet_eta")
 
 args = parser.parse_args()
+channel = args.channel
+isEta = args.iseta
+plottingVariable = args.var
 
 
 
@@ -78,7 +81,6 @@ df_probe_id = df_probe.Filter("Tau_Index >= 0 && \
 
 # Calculate Efficiency
 
-channel = args.channel
 # denominator histogram
 if channel != 'ditaujet_jetleg':
     ## select mu-tau pair with os and ss events
@@ -90,10 +92,10 @@ if channel != 'ditaujet_jetleg':
     df_TandP = df_TandP_os.Filter("mT < 30 && m_vis > 40 && m_vis < 80").Define("tau_pt",\
                                   "Tau_pt[Tau_Index]").Define("tau_eta", "Tau_eta[Tau_Index]")
     df_TandP_den_filt = df_TandP
-    h_den_os = df_TandP_den_filt.Histo1D(CreateHistModel("denominator", args.iseta), args.var)
+    h_den_os = df_TandP_den_filt.Histo1D(CreateHistModel("denominator", isEta), plottingVariable)
 
 else:
-    assert "jet" in args.var 
+    assert "jet" in plottingVariable 
     df_TandP_den = df_probe_id.Define("pass_ditau",
         "PassDiTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi,\
          Tau_pt[Tau_Index], Tau_eta[Tau_Index], Tau_phi[Tau_Index])")
@@ -106,7 +108,7 @@ else:
         ).Filter("Jet_Index >= 0").Define("jet_pt","Jet_pt[Jet_Index]").Define("jet_eta","Jet_eta[Jet_Index]")
 
     df_TandP_den_filt = df_TandP_den.Filter("pass_ditau > 0.5 && HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1 == 1")
-    h_den_os = df_TandP_den_filt.Histo1D(CreateHistModel("denominator", args.iseta), args.var)
+    h_den_os = df_TandP_den_filt.Histo1D(CreateHistModel("denominator", isEta), plottingVariable)
 
 # define numerators used more than once below
 PassMuTauFilter = "PassMuTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, \
@@ -122,7 +124,7 @@ if channel == 'ditau':
     df_TandP_num = df_TandP_den_filt.Define("pass_ditau", PassDiTauFilter)
     h_num_os = df_TandP_num.Filter("pass_ditau > 0.5 && \
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", args.iseta), args.var, 'weight')
+                 CreateHistModel("numerator", isEta), plottingVariable, 'weight')
     # h = df_TandP_num.Histo1D('weight')
 
 elif channel == 'mutau':
@@ -130,28 +132,28 @@ elif channel == 'mutau':
 
     h_num_os = df_TandP_num.Filter("pass_mutau > 0.5 && \
                  HLT_IsoMu20_eta2p1_LooseDeepTauPFTauHPS27_eta2p1_CrossL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", args.iseta), args.var, 'weight')
+                 CreateHistModel("numerator", isEta), plottingVariable, 'weight')
 
 elif channel == 'VBFasymtau_uppertauleg':
     df_TandP_num = df_TandP_den_filt.Define("pass_VBFasymtau_uppertauleg", PassMuTauFilter)
 
     h_num_os = df_TandP_num.Filter("pass_VBFasymtau_uppertauleg > 0.5 && \
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", args.iseta), args.var, 'weight')
+                 CreateHistModel("numerator", isEta), plottingVariable, 'weight')
 
 elif channel == 'VBFasymtau_lowertauleg':
     df_TandP_num = df_TandP_den_filt.Define("pass_VBFasymtau_uppertauleg", PassMuTauFilter)
 
     h_num_os = df_TandP_num.Filter("pass_VBFasymtau_uppertauleg > 0.5 && \
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", args.iseta), args.var, 'weight')
+                 CreateHistModel("numerator", isEta), plottingVariable, 'weight')
 
 elif channel == 'ditaujet_tauleg':
     df_TandP_num = df_TandP_den_filt.Define("pass_ditau", PassDiTauFilter)
 
     h_num_os = df_TandP_num.Filter("pass_ditau > 0.5 && \
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", args.iseta), args.var, 'weight')
+                 CreateHistModel("numerator", isEta), plottingVariable, 'weight')
 
 elif channel == 'ditaujet_jetleg':
     df_TandP_num = df_TandP_den_filt.Define("pass_ditau_jet",\
@@ -160,7 +162,7 @@ elif channel == 'ditaujet_jetleg':
 
     h_num_os = df_TandP_num.Filter("pass_ditau_jet > 0.5 && \
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_PFJet60_CrossL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", args.iseta), args.var)
+                 CreateHistModel("numerator", isEta), plottingVariable)
 else:
     raise ValueError()
 
@@ -174,11 +176,11 @@ gr.SetTitle("")
 gr.Draw()
 
 label = ROOT.TLatex(); label.SetNDC(True)
-if(args.var == "tau_pt" or args.var=="tau_l1pt"):
+if(plottingVariable == "tau_pt" or plottingVariable=="tau_l1pt"):
     label.DrawLatex(0.8, 0.03, "#tau_pT")
-elif(args.var == "jet_pt"):
+elif(plottingVariable == "jet_pt"):
     label.DrawLatex(0.8, 0.03, "jet_pT")
-elif(args.var == "jet_eta"):
+elif(plottingVariable == "jet_eta"):
     label.DrawLatex(0.8, 0.03, "#eta_jet")
 else:
     label.DrawLatex(0.8, 0.03, "#eta_#tau")
