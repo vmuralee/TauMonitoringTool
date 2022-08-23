@@ -162,7 +162,7 @@ elif channel == 'ditaujet_jetleg':
 
     h_num_os = df_TandP_num.Filter("pass_ditau_jet > 0.5 && \
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_PFJet60_CrossL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", isEta), plottingVariable)
+                 CreateHistModel("numerator", isEta), plottingVariable) 
 else:
     raise ValueError()
 
@@ -177,13 +177,13 @@ gr.Draw()
 
 label = ROOT.TLatex(); label.SetNDC(True)
 if(plottingVariable == "tau_pt" or plottingVariable=="tau_l1pt"):
-    label.DrawLatex(0.8, 0.03, "#tau_pT")
+    label.DrawLatex(0.8, 0.03, "#tau_{pT}")
 elif(plottingVariable == "jet_pt"):
-    label.DrawLatex(0.8, 0.03, "jet_pT")
+    label.DrawLatex(0.8, 0.03, "jet_{pT}")
 elif(plottingVariable == "jet_eta"):
-    label.DrawLatex(0.8, 0.03, "#eta_jet")
+    label.DrawLatex(0.8, 0.03, "#eta_{jet}")
 else:
-    label.DrawLatex(0.8, 0.03, "#eta_#tau")
+    label.DrawLatex(0.8, 0.03, "#eta_{#tau}")
 label.SetTextSize(0.040); label.DrawLatex(0.100, 0.920, "#bf{CMS Run3 Data}")
 label.SetTextSize(0.030); label.DrawLatex(0.630, 0.920, "#sqrt{s} = 13.6 TeV, "+args.run)
 
