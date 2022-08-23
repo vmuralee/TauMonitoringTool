@@ -12,10 +12,11 @@ import argparse
 
 parser = argparse.ArgumentParser(description='Skim full tuple.')
 parser.add_argument('--input', required=False, type=str, nargs='+', help="input files")
-parser.add_argument('--channel', required=True, type=str, help="ditau, mutau, or etau")
+parser.add_argument('--channel', required=True, type=str, 
+       help="ditau, mutau, etau, VBFasymtau_uppertauleg, VBFasymtau_lowertauleg, ditaujet_tauleg, or ditaujet_jetleg")
 parser.add_argument('--run', required=True, type=str, help="runs or fill used (look at your input files)")
 parser.add_argument('--plot', required=True, type=str, help="plot name")
-parser.add_argument('--iseta', action='store_true', help="plot name")
+parser.add_argument('--iseta', action='store_true', help="sets flag for eat plotting")
 parser.add_argument('--var', required=True, type=str, help="tau_pt, tau_eta, jet_pt, jet_eta")
 
 args = parser.parse_args()
@@ -23,7 +24,12 @@ channel = args.channel
 isEta = args.iseta
 plottingVariable = args.var
 
-
+possibleChannels = ["ditau", "mutau", "etau", \
+                    "VBFasymtau_uppertauleg", "VBFasymtau_lowertauleg", \
+                    "ditaujet_tauleg", "ditaujet_jetleg"]
+if channel not in possibleChannels:
+    print("{} is not a valid channel. Input must be one of the following {}".format(channel, possibleChannels))
+    sys.exit()  
 
 core_dir = str(os.getcwd()).split('producer')
 
