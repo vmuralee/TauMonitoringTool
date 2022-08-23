@@ -193,5 +193,5 @@ else:
 label.SetTextSize(0.040); label.DrawLatex(0.100, 0.920, "#bf{CMS Run3 Data}")
 label.SetTextSize(0.030); label.DrawLatex(0.630, 0.920, "#sqrt{s} = 13.6 TeV, " + args.run)
 
-c.SaveAs("%s_%s.pdf" % (args.plot, channel))
+c.SaveAs("%s_%s_%s.pdf" % (args.plot, channel, plottingVariable))
 
