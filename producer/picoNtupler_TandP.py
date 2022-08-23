@@ -113,22 +113,20 @@ PassMuTauFilter = "PassMuTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, \
                    TrigObj_pt, TrigObj_eta, TrigObj_phi, \
                    Tau_pt[Tau_Index], Tau_eta[Tau_Index], Tau_phi[Tau_Index])"
 
+PassDiTauFilter = "PassDiTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, \
+                   TrigObj_pt, TrigObj_eta, TrigObj_phi, \
+                   Tau_pt[Tau_Index], Tau_eta[Tau_Index], Tau_phi[Tau_Index])"
 
 # numerator histogram
 if channel == 'ditau':
-    df_TandP_num = df_TandP_den_filt.Define("pass_ditau",\
-             "PassDiTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi, \
-              Tau_pt[Tau_Index], Tau_eta[Tau_Index], Tau_phi[Tau_Index])")
-
+    df_TandP_num = df_TandP_den_filt.Define("pass_ditau", PassDiTauFilter)
     h_num_os = df_TandP_num.Filter("pass_ditau > 0.5 && \
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
                  CreateHistModel("numerator", args.iseta), args.var, 'weight')
     # h = df_TandP_num.Histo1D('weight')
 
 elif channel == 'mutau':
-    df_TandP_num = df_TandP_den_filt.Define("pass_mutau",\
-             "PassMuTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi, \
-              Tau_pt[Tau_Index], Tau_eta[Tau_Index], Tau_phi[Tau_Index])")
+    df_TandP_num = df_TandP_den_filt.Define("pass_mutau", PassMuTauFilter)
 
     h_num_os = df_TandP_num.Filter("pass_mutau > 0.5 && \
                  HLT_IsoMu20_eta2p1_LooseDeepTauPFTauHPS27_eta2p1_CrossL1 == 1").Histo1D( \
@@ -149,9 +147,7 @@ elif channel == 'VBFasymtau_lowertauleg':
                  CreateHistModel("numerator", args.iseta), args.var, 'weight')
 
 elif channel == 'ditaujet_tauleg':
-    df_TandP_num = df_TandP_den_filt.Define("pass_ditau",\
-            "PassDiTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi, \
-             Tau_pt[Tau_Index], Tau_eta[Tau_Index], Tau_phi[Tau_Index])")
+    df_TandP_num = df_TandP_den_filt.Define("pass_ditau", PassDiTauFilter)
 
     h_num_os = df_TandP_num.Filter("pass_ditau > 0.5 && \
                  HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
