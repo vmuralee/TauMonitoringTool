@@ -1,20 +1,6 @@
 # TauMonitoringTool
 Monitoring tool using NanoAOD samples
 
-Forked from Jaime
-
-https://github.com/jaimeleonh/TauMonitoringTool
-
-Who forked from Vinaya
-
-https://github.com/vmuralee/TauMonitoringTool
-
-Plan:
-1. add my triggers to Jaime's fork
-2. add other code changes to Jaime's fork
-3. PR Jaime
-4. ask Jaime to PR all changes to Vinaya
-
 In this repo, `producers/picoNtupler_TandP.py` is used to make turn-on plots with NanoAOD data.
 
 The following command generates a plot of tau pT for the ditau-monitoring path, and saves it to a pdf file.  
