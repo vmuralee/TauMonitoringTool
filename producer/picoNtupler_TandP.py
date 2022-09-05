@@ -91,7 +91,7 @@ df_probe_id = df_probe.Filter("Tau_Index >= 0 && \
 if channel != 'ditaujet_jetleg':
     ## select mu-tau pair with os and ss events
     df_TandP_os = df_probe_id.Define('weight',\
-                "(Tau_charge[Tau_Index] != Muon_charge[Tau_Index]) ? 1. : -1.").Define("mT",\
+                "(Tau_charge[Tau_Index] != Muon_charge[Muon_Index]) ? 1. : -1.").Define("mT",\
                 "CalcMT(muon_p4, MET_pt, MET_phi)").Define("m_vis", "ZMass(tau_p4, muon_p4)")
 
     ## select pure Z -> mu tau events
