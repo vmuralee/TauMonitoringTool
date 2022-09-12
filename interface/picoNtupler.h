@@ -76,9 +76,9 @@ int TauIndex(UInt_t ntau, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Ve
 }
 
 // int JetIndex(UInt_t njet, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Vec_t pu_id, Vec_t jet_id, TLorentzVector muon_p4, TLorentzVector tau_p4){
-int JetIndex(UInt_t njet, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Vec_t jet_id, TLorentzVector muon_p4, TLorentzVector tau_p4){
+int JetIndex(UInt_t njet, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Vec_t jet_id, TLorentzVector muon_p4, TLorentzVector tau_p4) {
   int jet_index = -1;
-  if(njet > 0){
+  if(njet > 0) {
     for (int ijet = njet - 1; ijet >= 0; ijet--){
       const ROOT::Math::PtEtaPhiMVector jet(pt_1[ijet], eta_1[ijet], phi_1[ijet], mass_1[ijet]);
       // if ((pu_id[ijet] < 4 && pt_1[ijet] <= 50) || jet_id[ijet] < 2) continue;
@@ -111,13 +111,14 @@ bool PassDiTauJetFilter(UInt_t ntrig, Vec_i trig_id, Vec_i trig_bits, Vec_t trig
     const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it], trig_eta[it], trig_phi[it], 0);
     float dR = deltaR(trig.Eta(), jet_eta, trig.Phi(), jet_phi);
     if (dR < 0.5) {
-      // if((trig_bits[it] & 2097152) != 0 && trig_id[it] == 1){ 
-      // if(trig_id[it] == 1){ 
-        return true;
-      // }
+      if((trig_bits[it] & 2097152) != 0 && trig_id[it] == 1) {
+        if(trig_id[it] == 1) {
+          return true;
+        }
+      }
     }
   }
-  return true; // FIXME when bits are added
+  return false;
 }
 
 bool PassMuTauFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,float tau_pt,float tau_eta,float tau_phi){
