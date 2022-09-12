@@ -44,24 +44,25 @@ from RooPlottingTool import *
 #inputFiles = (f'/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/SingleMuonV1/Files2/nano_aod_{i}.root' for i in range(0,79))
 
 folders = [
-    "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356943/",
-    "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356944/",
-    "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356945/",
-    "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356946/",
-    "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356947/",
-    "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356948/",
-    "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356949/",
-    "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356951/",
-    "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356954/",
-    "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356955/",
-    "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356956/",
+    # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356943/",
+    # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356944/",
+    # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356945/",
+    # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356946/",
+    # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356947/",
+    # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356948/",
+    # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356949/",
+    # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356951/",
+    # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356954/",
+    # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356955/",
+    # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356956/",
+    "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/savarghe/nanoaod/eraD/Fill8136/Muon/"
 ]
 inputFiles = []
 
 for folder in folders:
     files = os.listdir(folder)
     inputFiles += [folder + f for f in files]
-
+    
 df = ROOT.RDataFrame("Events", tuple(inputFiles))
 
 
@@ -72,18 +73,16 @@ df = ROOT.RDataFrame("Events", tuple(inputFiles))
 df_tag = df.Filter("nMuon == 1 && nTau >=1").Define("Muon_Index",\
           "MuonIndex(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi,\
            nMuon, Muon_pt, Muon_eta, Muon_phi, Muon_mass, Muon_pfRelIso04_all)").Define("muon_p4",\
-          "Obj_p4(Muon_Index, Muon_pt, Muon_eta, Muon_phi, Muon_mass)")
+          "Obj_p4(Muon_Index, Muon_pt, Muon_eta, Muon_phi, Muon_mass)").Define("muon_iso","Muon_pfRelIso04_all[Muon_Index]")
 
 ## select tau (probe) candidate
 
-df_probe = df_tag.Filter("Muon_Index >= 0").Define("Tau_Index",\
+df_probe = df_tag.Filter("Muon_Index >= 0 && muon_iso < 0.1 && HLT_IsoMu24_eta2p1 == 1").Define("Tau_Index",\
              "TauIndex(nTau, Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_dz, muon_p4)")
 
 df_probe_id = df_probe.Filter("Tau_Index >= 0 && \
-                               Tau_idDeepTau2017v2p1VSjet[Tau_Index] >=16 && \
-                               Tau_idDeepTau2017v2p1VSmu[Tau_Index] >=8 && \
-                               Tau_idDeepTau2017v2p1VSe[Tau_Index] >=2").Define("tau_p4",\
-                              "Obj_p4(Tau_Index, Tau_pt, Tau_eta, Tau_phi, Tau_mass)")
+                               Tau_decayMode[Tau_Index] != 5 && Tau_decayMode[Tau_Index] != 6 && Tau_idDeepTau2018v2p5VSjet[Tau_Index]==5").Define("tau_p4","Obj_p4(Tau_Index, Tau_pt, Tau_eta, Tau_phi, Tau_mass)")
+#  Tau_idDeepTau2017v2p1VSjet[Tau_Index] >=16
 
 # Calculate Efficiency
 
@@ -129,9 +128,8 @@ PassDiTauFilter = "PassDiTauFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, \
 if channel == 'ditau':
     df_TandP_num = df_TandP_den_filt.Define("pass_ditau", PassDiTauFilter)
     h_num_os = df_TandP_num.Filter("pass_ditau > 0.5 && \
-                 HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
-                 CreateHistModel("numerator", iseta), plottingVariable, 'weight')
-    # h = df_TandP_num.Histo1D('weight')
+    HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1 == 1").Histo1D(CreateHistModel("numerator", iseta), plottingVariable, 'weight')
+
 
 elif channel == 'mutau':
     df_TandP_num = df_TandP_den_filt.Define("pass_mutau", PassMuTauFilter)

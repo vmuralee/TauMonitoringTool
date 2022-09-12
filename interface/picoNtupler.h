@@ -37,7 +37,7 @@ bool PassTagFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_
      const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it],trig_eta[it],trig_phi[it],0);
      float dR = deltaR(trig.Eta(),muon_eta,trig.Phi(),muon_phi);
      if (dR < 0.5){
-      if((trig_bits[it] & 2) != 0 && trig_id[it] == 13){
+      if((trig_bits[it] & 8) != 0 && trig_id[it] == 13){
            return true;
       }
    }
@@ -52,7 +52,7 @@ int MuonIndex(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t tri
       float mu_iso = pfIso[imu]/muon.Pt();
       if(muon.Pt() < 24)continue;
       if(std::fabs(muon.Eta()) > 2.1)continue;
-      if(mu_iso > 0.1)continue;
+      //if(mu_iso > 0.1)continue;
       if(!PassTagFilter(ntrig,trig_id,trig_bits,trig_pt,trig_eta,trig_phi,muon.Pt(),muon.Eta(),muon.Phi()))continue;
       mu_index = imu;
     }
