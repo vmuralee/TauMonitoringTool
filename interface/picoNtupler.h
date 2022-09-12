@@ -13,11 +13,25 @@ using RNode = ROOT::RDF::RNode;
 using Vec_t = const ROOT::RVec<float>&;
 using Vec_i = const ROOT::RVec<int>&;
 
-float ZMass(TLorentzVector tau_p4,TLorentzVector muon_p4) {
 
-    return (tau_p4 + muon_p4).M();
+float getFloatValue(Vec_t vec, Int_t index) {
+  if (index >= 0) return vec[index];
+  else return -999.;
+}
+
+int getIntValue(Vec_i vec, Int_t index) {
+  if (index >= 0) return vec[index];
+  else return -999;
+}
+
+float ZMass(TLorentzVector tau_p4,TLorentzVector muon_p4) {
+  if (tau_p4.Pt() <= 0 || muon_p4.Pt() <= 0)
+    return -999.;
+  return (tau_p4 + muon_p4).M();
 }
 float CalcMT(TLorentzVector lep_p4,float met_pt,float met_phi){
+  if (lep_p4.Pt() <= 0)
+    return -999.;
   TLorentzVector met_p4;
   met_p4.SetPtEtaPhiE(met_pt,0,met_phi,0);
   const double delta_phi = ROOT::Math::VectorUtil::DeltaPhi(lep_p4, met_p4);
@@ -44,6 +58,10 @@ bool PassTagFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_
   }
   return false;
 }
+
+
+
+
 int MuonIndex(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,UInt_t nMu,Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1,Vec_t pfIso){
   int mu_index = -1;
   if(nMu > 0){
@@ -59,9 +77,17 @@ int MuonIndex(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t tri
   }
   return mu_index;
 }
+
+int MuonIndexFull(UInt_t nTau, UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,UInt_t nMu,Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Vec_t pfIso) {
+  if (nMu == 1 && nTau >= 1) {
+    return MuonIndex(ntrig, trig_id, trig_bits, trig_pt, trig_eta, trig_phi, nMu, pt_1, eta_1, phi_1, mass_1, pfIso);
+  }
+  return -999;
+}
+
 int TauIndex(UInt_t ntau, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Vec_t dz_1, TLorentzVector muon_p4){
   int tau_index = -1;
-  if(ntau > 0){
+  if(ntau > 0 && muon_p4.Pt() > 0.){
     // for (int itau = 0; itau <= ntau; itau++){
       for (int itau = ntau - 1; itau >= 0; itau--){
       const ROOT::Math::PtEtaPhiMVector tau(pt_1[itau], eta_1[itau], phi_1[itau], mass_1[itau]);
@@ -78,7 +104,7 @@ int TauIndex(UInt_t ntau, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Ve
 // int JetIndex(UInt_t njet, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Vec_t pu_id, Vec_t jet_id, TLorentzVector muon_p4, TLorentzVector tau_p4){
 int JetIndex(UInt_t njet, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Vec_t jet_id, TLorentzVector muon_p4, TLorentzVector tau_p4) {
   int jet_index = -1;
-  if(njet > 0) {
+  if(njet > 0 && muon_p4.Pt() > 0 && tau_p4.Pt() > 0) {
     for (int ijet = njet - 1; ijet >= 0; ijet--){
       const ROOT::Math::PtEtaPhiMVector jet(pt_1[ijet], eta_1[ijet], phi_1[ijet], mass_1[ijet]);
       // if ((pu_id[ijet] < 4 && pt_1[ijet] <= 50) || jet_id[ijet] < 2) continue;
@@ -92,21 +118,24 @@ int JetIndex(UInt_t njet, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Ve
   return jet_index;
 }
 
-bool PassDiTauFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,float tau_pt,float tau_eta,float tau_phi){
-   
-   for(int it=0; it < ntrig; it++){
-     const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it],trig_eta[it],trig_phi[it],0);
-     float dR = deltaR(trig.Eta(),tau_eta,trig.Phi(),tau_phi);
-     if (dR < 0.5){
-       if((trig_bits[it] & 512) != 0 && (trig_bits[it] & 1024) != 0 && trig_id[it] == 15){ 
-           return true;
+bool PassDiTauFilter(UInt_t ntrig, Vec_i trig_id, Vec_i trig_bits, Vec_t trig_pt, Vec_t trig_eta, Vec_t trig_phi, float tau_pt, float tau_eta, float tau_phi) {
+  if (tau_pt <= 0)
+    return false;
+  for(int it=0; it < ntrig; it++){
+    const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it],trig_eta[it],trig_phi[it],0);
+    float dR = deltaR(trig.Eta(),tau_eta,trig.Phi(),tau_phi);
+    if (dR < 0.5){
+      if((trig_bits[it] & 512) != 0 && (trig_bits[it] & 1024) != 0 && trig_id[it] == 15){ 
+        return true;
       }
-   }
+    }
   }
   return false;
 }
 
 bool PassDiTauJetFilter(UInt_t ntrig, Vec_i trig_id, Vec_i trig_bits, Vec_t trig_pt, Vec_t trig_eta, Vec_t trig_phi, float jet_pt, float jet_eta, float jet_phi){
+  if (jet_pt <= 0)
+    return false;
   for(int it = 0; it < ntrig; it++) {
     const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it], trig_eta[it], trig_phi[it], 0);
     float dR = deltaR(trig.Eta(), jet_eta, trig.Phi(), jet_phi);
@@ -122,15 +151,16 @@ bool PassDiTauJetFilter(UInt_t ntrig, Vec_i trig_id, Vec_i trig_bits, Vec_t trig
 }
 
 bool PassMuTauFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,float tau_pt,float tau_eta,float tau_phi){
-   
-   for(int it=0; it < ntrig; it++){
-     const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it],trig_eta[it],trig_phi[it],0);
-     float dR = deltaR(trig.Eta(),tau_eta,trig.Phi(),tau_phi);
-     if (dR < 0.5){
-       if((trig_bits[it] & 512) != 0  && trig_id[it] == 15){ 
-           return true;
+  if (tau_pt <= 0)
+    return false;
+  for(int it=0; it < ntrig; it++){
+    const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it],trig_eta[it],trig_phi[it],0);
+    float dR = deltaR(trig.Eta(),tau_eta,trig.Phi(),tau_phi);
+    if (dR < 0.5){
+      if((trig_bits[it] & 512) != 0  && trig_id[it] == 15){ 
+          return true;
       }
-   }
+    }
   }
   return false;
 }

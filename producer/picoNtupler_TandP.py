@@ -55,7 +55,7 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
     df_tag = df.Filter("nMuon == 1 && nTau >=1").Define("Muon_Index",\
               "MuonIndex(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi,\
                nMuon, Muon_pt, Muon_eta, Muon_phi, Muon_mass, Muon_pfRelIso04_all)").Define("muon_p4",\
-              "Obj_p4(Muon_Index, Muon_pt, Muon_eta, Muon_phi, Muon_mass)").Define("muon_iso","Muon_pfRelIso04_all[Muon_Index]")
+              "Obj_p4(Muon_Index, Muon_pt, Muon_eta, Muon_phi, Muon_mass)").Define("muon_iso","getFloatValue(Muon_pfRelIso04_all, Muon_Index)")
 
     ## select tau (probe) candidate
     df_probe = df_tag.Filter("Muon_Index >= 0 && muon_iso < 0.1 && HLT_IsoMu24_eta2p1 == 1").Define("Tau_Index",\
