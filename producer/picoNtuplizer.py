@@ -17,6 +17,9 @@ sys.path.insert(1, core_dir[0]+'/python')
 
 from RooPlottingTool import *
 
+# select the version
+TauID_ver = sys.argv[1]
+outFile   = sys.argv[2]
 
 def create_rdataframe(folders, inputFiles=None):
     if not inputFiles:
@@ -42,16 +45,22 @@ def obtain_picontuple(df):
     branches += ["Muon_Index", "muon_iso"]
 
     ## select tau (probe) candidate
-    df = df.Define("Tau_Index", "TauIndex(nTau, Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_dz, muon_p4)")
+    df = df.Define("Tau_Index", "TauIndex(nTau, Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_dz, muon_p4,Tau_rawIsodR03)")
     branches += ["HLT_IsoMu24_eta2p1", "Tau_Index"]
 
     df = df.Define("Tau_goodid",
         "getIntValue(Tau_decayMode, Tau_Index) != 5 && "
         "getIntValue(Tau_decayMode, Tau_Index) != 6 && "
+        "getIntValue(Tau_idDeepTau2017v2p1VSjet, Tau_Index) >= 16"
+    ).Define("tau_p4","Obj_p4(Tau_Index, Tau_pt, Tau_eta, Tau_phi, Tau_mass)")
+    branches += ["Tau_goodid", "Tau_decayMode", "Tau_idDeepTau2017v2p1VSjet"] 
+    if TauID_ver == '2p5':
+        df = df.Define("Tau_goodid",
+        "getIntValue(Tau_decayMode, Tau_Index) != 5 && "
+        "getIntValue(Tau_decayMode, Tau_Index) != 6 && "
         "getIntValue(Tau_idDeepTau2018v2p5VSjet, Tau_Index) == 5"
     ).Define("tau_p4","Obj_p4(Tau_Index, Tau_pt, Tau_eta, Tau_phi, Tau_mass)")
-    branches += ["Tau_goodid", "Tau_decayMode", "Tau_idDeepTau2018v2p5VSjet"] 
-
+        branches += ["Tau_goodid", "Tau_decayMode", "Tau_idDeepTau2017v2p1VSjet"] 
     # Calculate Efficiency
     df = df.Define('weight',
         "(getIntValue(Tau_charge, Tau_Index) != getIntValue(Muon_charge, Muon_Index)) ? 1. : -1."
@@ -87,6 +96,8 @@ def obtain_picontuple(df):
     ## 'VBFasymtau_lowertauleg
     branches += ["HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1"]
 
+    ## VBF+ditau chargedIso Monitoring
+    branches += ["HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1"]
     ## ditaujet_jetleg
     df = df.Define("pass_ditau_jet",
         "PassDiTauJetFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi, \
@@ -103,18 +114,18 @@ if __name__ == '__main__':
     #inputFiles = (f'/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/SingleMuonV1/Files2/nano_aod_{i}.root' for i in range(0,79))
 
     folders = [
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356943/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356944/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356945/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356946/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356947/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356948/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356949/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356951/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356954/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356955/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356956/",
-        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/savarghe/nanoaod/eraD/Fill8136/Muon/"
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356943/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356944/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356945/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356946/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356947/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356948/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356949/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356951/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356954/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356955/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356956/"
+        #"/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/savarghe/nanoaod/eraD/Fill8136/Muon/"
     ]
 
     df = create_rdataframe(folders)
@@ -128,4 +139,4 @@ if __name__ == '__main__':
     for branch_name in branches:
         branch_list.push_back(branch_name)
 
-    df.Snapshot("Events", "./picoNtuple.root", branch_list)
+    df.Snapshot("Events", './'+outFile+'.root', branch_list)

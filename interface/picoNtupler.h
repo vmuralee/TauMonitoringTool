@@ -85,8 +85,9 @@ int MuonIndexFull(UInt_t nTau, UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t 
   return -999;
 }
 
-int TauIndex(UInt_t ntau, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Vec_t dz_1, TLorentzVector muon_p4){
+int TauIndex(UInt_t ntau, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Vec_t dz_1, TLorentzVector muon_p4,Vec_t Tau_rawIsodR03){
   int tau_index = -1;
+  float tau_iso = -9999;
   if(ntau > 0 && muon_p4.Pt() > 0.){
     // for (int itau = 0; itau <= ntau; itau++){
       for (int itau = ntau - 1; itau >= 0; itau--){
@@ -95,7 +96,10 @@ int TauIndex(UInt_t ntau, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Ve
       if(deltaR(tau.Eta(), muon_p4.Eta(), tau.Phi(), muon_p4.Phi()) < 0.5) continue;
       if(tau.Pt() < 18) continue;
       if(std::fabs(tau.Eta()) > 2.1) continue; 
-      tau_index = itau;
+      if(Tau_rawIsodR03[itau] > tau_iso){
+	tau_iso = Tau_rawIsodR03[itau];
+	tau_index = itau;
+      }
     }  
   }
   return tau_index;
