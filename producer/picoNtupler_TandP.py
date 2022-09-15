@@ -207,4 +207,4 @@ if __name__ == '__main__':
 
     df = create_rdataframe(folders)
     h_num_os, h_den_os = obtain_histograms(df, channel, iseta, plottingVariable)
-    plot(h_num_os, h_den_os, plottingVariable, channnel, args.run, args.plot)
+    plot(h_num_os, h_den_os, plottingVariable, channel, args.run, args.plot)
