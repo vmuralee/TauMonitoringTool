@@ -59,7 +59,7 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
 
     ## select tau (probe) candidate
     df_probe = df_tag.Filter("Muon_Index >= 0 && muon_iso < 0.1 && HLT_IsoMu24_eta2p1 == 1").Define("Tau_Index",\
-                 "TauIndex(nTau, Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_dz, muon_p4)")
+                 "TauIndex(nTau, Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_dz, muon_p4, Tau_rawDeepTau2018v2p5VSjet)")
 
     df_probe_id = df_probe.Filter("Tau_Index >= 0 && \
                                    Tau_decayMode[Tau_Index] != 5 && Tau_decayMode[Tau_Index] != 6 && Tau_idDeepTau2018v2p5VSjet[Tau_Index]==5").Define("tau_p4","Obj_p4(Tau_Index, Tau_pt, Tau_eta, Tau_phi, Tau_mass)")
