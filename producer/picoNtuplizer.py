@@ -48,19 +48,21 @@ def obtain_picontuple(df):
     df = df.Define("Tau_Index", "TauIndex(nTau, Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_dz, muon_p4,Tau_rawIsodR03)")
     branches += ["HLT_IsoMu24_eta2p1", "Tau_Index"]
 
-    df = df.Define("Tau_goodid",
-        "getIntValue(Tau_decayMode, Tau_Index) != 5 && "
-        "getIntValue(Tau_decayMode, Tau_Index) != 6 && "
-        "getIntValue(Tau_idDeepTau2017v2p1VSjet, Tau_Index) >= 16"
-    ).Define("tau_p4","Obj_p4(Tau_Index, Tau_pt, Tau_eta, Tau_phi, Tau_mass)")
-    branches += ["Tau_goodid", "Tau_decayMode", "Tau_idDeepTau2017v2p1VSjet"] 
-    if TauID_ver == '2p5':
+    if TauID_ver == '2p1':
         df = df.Define("Tau_goodid",
-        "getIntValue(Tau_decayMode, Tau_Index) != 5 && "
-        "getIntValue(Tau_decayMode, Tau_Index) != 6 && "
-        "getIntValue(Tau_idDeepTau2018v2p5VSjet, Tau_Index) == 5"
-    ).Define("tau_p4","Obj_p4(Tau_Index, Tau_pt, Tau_eta, Tau_phi, Tau_mass)")
+            "getIntValue(Tau_decayMode, Tau_Index) != 5 && "
+            "getIntValue(Tau_decayMode, Tau_Index) != 6 && "
+            "getIntValue(Tau_idDeepTau2017v2p1VSjet, Tau_Index) >= 16"
+        ).Define("tau_p4","Obj_p4(Tau_Index, Tau_pt, Tau_eta, Tau_phi, Tau_mass)")
         branches += ["Tau_goodid", "Tau_decayMode", "Tau_idDeepTau2017v2p1VSjet"] 
+    elif TauID_ver == '2p5':
+        df = df.Define("Tau_goodid",
+            "getIntValue(Tau_decayMode, Tau_Index) != 5 && "
+            "getIntValue(Tau_decayMode, Tau_Index) != 6 && "
+            "getIntValue(Tau_idDeepTau2018v2p5VSjet, Tau_Index) >= 5"
+        ).Define("tau_p4","Obj_p4(Tau_Index, Tau_pt, Tau_eta, Tau_phi, Tau_mass)")
+        branches += ["Tau_goodid", "Tau_decayMode", "Tau_idDeepTau2018v2p5VSjet"]
+
     # Calculate Efficiency
     df = df.Define('weight',
         "(getIntValue(Tau_charge, Tau_Index) != getIntValue(Muon_charge, Muon_Index)) ? 1. : -1."
@@ -125,7 +127,7 @@ if __name__ == '__main__':
         "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356954/",
         "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356955/",
         "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356956/"
-        #"/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/savarghe/nanoaod/eraD/Fill8136/Muon/"
+        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/savarghe/nanoaod/eraD/Fill8136/Muon/"
     ]
 
     df = create_rdataframe(folders)
