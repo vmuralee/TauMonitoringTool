@@ -45,7 +45,10 @@ def obtain_picontuple(df):
     branches += ["Muon_Index", "muon_iso"]
 
     ## select tau (probe) candidate
-    df = df.Define("Tau_Index", "TauIndex(nTau, Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_dz, muon_p4,Tau_rawIsodR03)")
+    if TauID_ver == '2p1':
+        df = df.Define("Tau_Index", "TauIndex(nTau, Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_dz, muon_p4,Tau_rawDeepTau2017v2p1VSjet)")
+    elif TauID_ver == '2p5':
+        df = df.Define("Tau_Index", "TauIndex(nTau, Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_dz, muon_p4,Tau_rawDeepTau2018v2p5VSjet)")
     branches += ["HLT_IsoMu24_eta2p1", "Tau_Index"]
 
     if TauID_ver == '2p1':
