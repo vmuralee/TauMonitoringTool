@@ -180,6 +180,7 @@ def plot(h_num_os, h_den_os, plottingVariable, channel, add_to_label, plotName):
     label.SetTextSize(0.030); label.DrawLatex(0.630, 0.920, "#sqrt{s} = 13.6 TeV, %s" % add_to_label)
 
     c.SaveAs("%s_%s_%s.pdf" % (plotName, channel, plottingVariable))
+    c.SaveAs("%s_%s_%s.png" % (plotName, channel, plottingVariable))
 
 
 if __name__ == '__main__':
