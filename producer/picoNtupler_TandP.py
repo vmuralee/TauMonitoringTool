@@ -161,7 +161,7 @@ def plot(h_num_os, h_den_os, plottingVariable, channel, add_to_label, plotName):
     ROOT.gStyle.SetOptStat(0); ROOT.gStyle.SetTextFont(42)
     c = ROOT.TCanvas("c", "", 800, 700)
 
-    gr = ROOT.TGraphAsymmErrors(h_num_os.GetPtr(),h_den_os.GetPtr(),"cp")
+    gr = ROOT.TGraphAsymmErrors(h_num_os.GetPtr(),h_den_os.GetPtr(),"n")
     gr.SetTitle("")
     gr.SetMarkerStyle(21)
     gr.SetMarkerSize(1.5)
