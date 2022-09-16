@@ -201,7 +201,6 @@ def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVari
     # "A" draws without the axis 
     # somehow the plot is not drawn without this argument
     # https://root.cern/doc/master/classTHistPainter.html#HP01a
-    #gr_A.Draw("AP")
     gr_A.Draw("AP")
 
     gr_B = ROOT.TGraphAsymmErrors(h_num_os_B.GetPtr(),h_den_os_B.GetPtr(),"cp")
@@ -209,7 +208,7 @@ def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVari
     gr_B.SetLineColor(9) # somehow this is being overwritten
     gr_B.SetMarkerStyle(20)
     gr_B.SetMarkerSize(1.5)
-    gr_B.Draw("PLC")
+    gr_B.Draw("P")
 
     combined_name = channel_A + "_" + channel_B
     c.SaveAs("%s_%s_%s.png" % (plotName, combined_name, plottingVariable))
