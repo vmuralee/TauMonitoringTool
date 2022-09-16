@@ -182,6 +182,39 @@ def plot(h_num_os, h_den_os, plottingVariable, channel, add_to_label, plotName):
     c.SaveAs("%s_%s_%s.pdf" % (plotName, channel, plottingVariable))
     c.SaveAs("%s_%s_%s.png" % (plotName, channel, plottingVariable))
 
+def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVariable, channel_A, channel_B, add_to_label, plotName):
+    print("Plotting {} of {} and {}".format(plottingVariable, channel_A, channel_B))
+    ROOT.gStyle.SetOptStat(0); ROOT.gStyle.SetTextFont(42)
+    c = ROOT.TCanvas("c", "", 800, 700)
+
+    # Nuclear option, use multiplotter
+
+    # this divides num by den.
+    # the "Clopper-Pearson" interval is used
+    # https://root.cern.ch/doc/master/classTGraphAsymmErrors.html#a37a202762b286cf4c7f5d34046be8c0b
+    gr_A = ROOT.TGraphAsymmErrors(h_num_os_A.GetPtr(),h_den_os_A.GetPtr(),"cp")
+    gr_A.SetTitle("")
+    gr_A.SetLineColor(2)
+    gr_A.SetMarkerStyle(21)
+    gr_A.SetMarkerSize(1.5)
+    # "P" forces the use of the chosen marker
+    # "A" draws without the axis 
+    # somehow the plot is not drawn without this argument
+    # https://root.cern/doc/master/classTHistPainter.html#HP01a
+    #gr_A.Draw("AP")
+    gr_A.Draw("AP")
+
+    gr_B = ROOT.TGraphAsymmErrors(h_num_os_B.GetPtr(),h_den_os_B.GetPtr(),"cp")
+    gr_B.SetTitle("")
+    gr_B.SetLineColor(9) # somehow this is being overwritten
+    gr_B.SetMarkerStyle(20)
+    gr_B.SetMarkerSize(1.5)
+    gr_B.Draw("PLC")
+
+    combined_name = channel_A + "_" + channel_B
+    c.SaveAs("%s_%s_%s.png" % (plotName, combined_name, plottingVariable))
+
+
 
 if __name__ == '__main__':
     args = parser.parse_args()
