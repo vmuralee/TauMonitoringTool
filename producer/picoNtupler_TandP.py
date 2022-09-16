@@ -58,6 +58,7 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
               "Obj_p4(Muon_Index, Muon_pt, Muon_eta, Muon_phi, Muon_mass)").Define("muon_iso","getFloatValue(Muon_pfRelIso04_all, Muon_Index)")
 
     ## select tau (probe) candidate
+    print("FIXME: If Fill 8102, change Tau_rawDeepTau2018v2p5VSjet to Tau_rawDeepTau2017v2p1VSjet")
     df_probe = df_tag.Filter("Muon_Index >= 0 && muon_iso < 0.1 && HLT_IsoMu24_eta2p1 == 1").Define("Tau_Index",\
                  "TauIndex(nTau, Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_dz, muon_p4, Tau_rawDeepTau2018v2p5VSjet)")
 
