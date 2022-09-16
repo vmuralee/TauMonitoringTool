@@ -191,16 +191,19 @@ def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVari
     mg = ROOT.TMultiGraph("mg", "")
 
     # this divides num by den.
-    # the "Clopper-Pearson" interval is used
+    # the "Clopper-Pearson" interval is not supported for
+    # TGraphAsymmErrors::Divide, so i changed "cp" to "n"
+    # the graphs are not changed
     # https://root.cern.ch/doc/master/classTGraphAsymmErrors.html#a37a202762b286cf4c7f5d34046be8c0b
-    gr_A = ROOT.TGraphAsymmErrors(h_num_os_A.GetPtr(),h_den_os_A.GetPtr(),"cp")
+    # use "nv" to get per-bin efficiency printed to terminal
+    gr_A = ROOT.TGraphAsymmErrors(h_num_os_A.GetPtr(),h_den_os_A.GetPtr(), "n")
     gr_A.SetTitle("")
     gr_A.SetLineColor(2) # this is red
     gr_A.SetMarkerStyle(21) # this is a filled box
     gr_A.SetMarkerSize(1.5)
 
 
-    gr_B = ROOT.TGraphAsymmErrors(h_num_os_B.GetPtr(),h_den_os_B.GetPtr(),"cp")
+    gr_B = ROOT.TGraphAsymmErrors(h_num_os_B.GetPtr(),h_den_os_B.GetPtr(), "n")
     gr_B.SetTitle("")
     gr_B.SetLineColor(9) # this is blue
     gr_B.SetMarkerStyle(20) # this is a filled circle
@@ -228,6 +231,7 @@ def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVari
     label.SetTextSize(0.030); label.DrawLatex(0.630, 0.920, "#sqrt{s} = 13.6 TeV, %s" % add_to_label)
 
     combined_name = channel_A + "_" + channel_B
+    c.SaveAs("%s_%s_%s.pdf" % (plotName, combined_name, plottingVariable))
     c.SaveAs("%s_%s_%s.png" % (plotName, combined_name, plottingVariable))
 
 
