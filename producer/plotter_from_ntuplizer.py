@@ -30,7 +30,7 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
     if channel != "ditaujet_jetleg":
         assert "jet" not in plottingVariable
         df = df.Filter("passZmass == 1").Define("tau_pt", "Tau_pt[Tau_Index]").Define("tau_eta", "Tau_eta[Tau_Index]")
-        if args.iseta:
+        if iseta:
           df = df.Filter('tau_pt > 35')  
         h_den_os = df.Histo1D(CreateHistModel("denominator", iseta), plottingVariable)
         # numerator histogram
