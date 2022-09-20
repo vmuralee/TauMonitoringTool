@@ -10,8 +10,12 @@ from plotter_from_ntuplizer import obtain_histograms
 parser = argparse.ArgumentParser(description='Skim full tuple.')
 parser.add_argument('--input_A', required=True, type=str, nargs='+', help="first input file")
 parser.add_argument('--input_B', required=True, type=str, nargs='+', help="second input file")
-parser.add_argument('--channel', required=True, type=str, 
-       help="ditau, mutau, etau, VBFasymtau_uppertauleg, VBFasymtau_lowertauleg, ditaujet_tauleg, or ditaujet_jetleg,VBFditau_old")
+parser.add_argument('--channel_A', required=True, type=str, 
+       help="ditau, mutau, etau, VBFasymtau_uppertauleg, VBFasymtau_lowertauleg, ditaujet_tauleg, ditaujet_jetleg, VBFditau_old,\
+       or VBFditau_Run3_tauleg")
+parser.add_argument('--channel_B', required=True, type=str, 
+       help="ditau, mutau, etau, VBFasymtau_uppertauleg, VBFasymtau_lowertauleg, ditaujet_tauleg, ditaujet_jetleg, VBFditau_old,\
+       or VBFditau_Run3_tauleg")
 parser.add_argument('--run', required=True, type=str, help="runs or fill used (look at your input files)")
 parser.add_argument('--plot', required=True, type=str, help="plot name")
 parser.add_argument('--iseta', action='store_true', help="sets flag for eat plotting")
@@ -22,7 +26,8 @@ parser.add_argument('--var', required=True, type=str, help="tau_pt, tau_eta, jet
 #        same for help statement of channel arguments in argparse
 possibleChannels = ["ditau", "mutau", "etau", \
                     "VBFasymtau_uppertauleg", "VBFasymtau_lowertauleg", \
-                    "ditaujet_tauleg", "ditaujet_jetleg","VBFditau_old"]
+                    "ditaujet_tauleg", "ditaujet_jetleg",\
+                    "VBFditau_old", "VBFditau_Run3_tauleg"]
 
 def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVariable, channel_A, channel_B, add_to_label, plotName):
     print("Plotting {} of {} and {}".format(plottingVariable, channel_A, channel_B))
@@ -89,15 +94,16 @@ def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVari
 if __name__ == "__main__":
 
     args = parser.parse_args()
-    channel = args.channel
+    channel_A = args.channel_A
+    channel_B = args.channel_B
     #iseta = args.iseta
     plottingVariable = args.var
     iseta = "eta" in "plottingVariable"
     print(iseta)
     print(args.input_A, args.input_B)
     df_A = ROOT.RDataFrame("Events",tuple(args.input_A))
-    h_num_os_A, h_den_os_A = obtain_histograms(df_A, "VBFditau_Run3_tauleg", iseta, plottingVariable)
+    h_num_os_A, h_den_os_A = obtain_histograms(df_A, channel_A, iseta, plottingVariable)
     df_B = ROOT.RDataFrame("Events",tuple(args.input_B))
-    h_num_os_B, h_den_os_B = obtain_histograms(df_B, "VBFditau_Run3_tauleg", iseta, plottingVariable)
+    h_num_os_B, h_den_os_B = obtain_histograms(df_B, channel_B, iseta, plottingVariable)
 
-    plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVariable, "VBFditau_Run3", "VBFditau_Run3", args.run, args.plot)
+    plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVariable, channel_A, channel_B, args.run, args.plot)
