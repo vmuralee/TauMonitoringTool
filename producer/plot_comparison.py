@@ -80,8 +80,8 @@ def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVari
     # add legend
     leg = ROOT.TLegend(0.55, 0.15, 0.90, 0.45)
     leg.SetTextSize(0.045)
-    leg.AddEntry(gr_A, channel_A)
-    leg.AddEntry(gr_B, channel_B)
+    leg.AddEntry(gr_A, "v2p1")
+    leg.AddEntry(gr_B, "v2p5")
     leg.Draw()
     # add new leg
     # make user friendly
@@ -96,7 +96,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     channel_A = args.channel_A
     channel_B = args.channel_B
-    #iseta = args.iseta
     plottingVariable = args.var
     iseta = "eta" in "plottingVariable"
     print(iseta)
