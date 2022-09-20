@@ -74,6 +74,7 @@ def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVari
     leg = ROOT.TLegend(0.5, 0.45, 0.85, 0.85)
     leg.AddEntry(gr_A)
     leg.AddEntry(gr_B)
+    leg.Draw()
     # add new leg
     # make user friendly
 

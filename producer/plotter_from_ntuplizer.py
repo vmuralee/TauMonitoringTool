@@ -4,7 +4,7 @@ ROOT.ROOT.EnableImplicitMT()
 ROOT.gROOT.SetBatch(True)
 
 import argparse
-from picoNtupler_TandP import plot, plot_comparison
+from picoNtupler_TandP import plot
 from RooPlottingTool import *
 
 
@@ -83,7 +83,3 @@ if __name__ == "__main__":
     df = ROOT.RDataFrame("Events",tuple(args.input))
     h_num_os, h_den_os = obtain_histograms(df, channel, iseta, plottingVariable)
     plot(h_num_os, h_den_os, plottingVariable, channel, args.run, args.plot)
-    #h_num_os_A, h_den_os_A = obtain_histograms(df, "VBFditau_old", iseta, plottingVariable)
-    #h_num_os_B, h_den_os_B = obtain_histograms(df, "mutau", iseta, plottingVariable)
-
-    #plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVariable, "VBFditau_old", "mutau", args.run, args.plot)
