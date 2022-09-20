@@ -18,6 +18,8 @@ parser.add_argument('--iseta', action='store_true', help="sets flag for eat plot
 parser.add_argument('--var', required=True, type=str, help="tau_pt, tau_eta, jet_pt, jet_eta")
 
 
+# FIXME: possible channels should be defined in one location and imported where needed
+#        same for help statement of channel arguments in argparse
 possibleChannels = ["ditau", "mutau", "etau", \
                     "VBFasymtau_uppertauleg", "VBFasymtau_lowertauleg", \
                     "ditaujet_tauleg", "ditaujet_jetleg","VBFditau_old"]
@@ -94,8 +96,8 @@ if __name__ == "__main__":
     print(iseta)
     print(args.input_A, args.input_B)
     df_A = ROOT.RDataFrame("Events",tuple(args.input_A))
-    h_num_os_A, h_den_os_A = obtain_histograms(df_A, "VBFditau_old", iseta, plottingVariable)
+    h_num_os_A, h_den_os_A = obtain_histograms(df_A, "VBFditau_Run3_tauleg", iseta, plottingVariable)
     df_B = ROOT.RDataFrame("Events",tuple(args.input_B))
-    h_num_os_B, h_den_os_B = obtain_histograms(df_B, "mutau", iseta, plottingVariable)
+    h_num_os_B, h_den_os_B = obtain_histograms(df_B, "VBFditau_Run3_tauleg", iseta, plottingVariable)
 
-    plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVariable, "VBFditau_old", "mutau", args.run, args.plot)
+    plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVariable, "VBFditau_Run3", "VBFditau_Run3", args.run, args.plot)
