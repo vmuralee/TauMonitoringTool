@@ -12,6 +12,19 @@ The following command does the same thing, but for tau eta (necessary to include
 python3 plotter_from_ntuplizer.py --input picoNtuple.root --channel ditau --run "Fill 8102" --plot testplot --var tau_eta --iseta
 ```
 
+`plot_comparison.py` is made to compare either the same path on different datasets or different paths on the same dataset.
+For now, the legend lable of the script is hardcoded, so the first sample is always written as using DeepTau v2p1
+and the second as using DeepTau v2p5.
+To use plot_comparison.py in this way, first produce two different ntuples using picoNtuplizer.py with 2p1 and 2p5, then run the following command.
+```
+python3 plot_comparison.py \
+--input_A Fill8102_DeepTauV2p1_New.root \
+--input_B Fill8136_DeepTauV2p5_New.root \
+--channel_A VBFditau_Run3_tauleg \
+--channel_B VBFditau_Run3_tauleg \
+--run "Compare DeepTau" --plot testplot --var tau_pt
+```
+
 # Summary of scripts in `producer`
 picoNtuplizer.py makes ntuples
 plotter_from_Ntuplizer.py and multiplotter_from_Ntuplizer.py both make plots using an ntuple as input (as seen above)
