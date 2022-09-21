@@ -98,7 +98,6 @@ if __name__ == "__main__":
     channel_B = args.channel_B
     plottingVariable = args.var
     iseta = "eta" in "plottingVariable"
-    print(iseta)
     print(args.input_A, args.input_B)
     df_A = ROOT.RDataFrame("Events",tuple(args.input_A))
     h_num_os_A, h_den_os_A = obtain_histograms(df_A, channel_A, iseta, plottingVariable)
