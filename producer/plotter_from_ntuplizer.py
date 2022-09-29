@@ -30,7 +30,7 @@ possibleChannels = ["ditau", "mutau", "etau", \
 def obtain_histograms(df, channel, iseta, plottingVariable):
 
     df = df.Filter("Muon_Index >= 0 && muon_iso < 0.1 && Tau_goodid == 1")
-    
+
     if channel != "ditaujet_jetleg":
         assert "jet" not in plottingVariable
         df = df.Filter("passZmass == 1").Define("tau_pt", "Tau_pt[Tau_Index]").Define("tau_eta", "Tau_eta[Tau_Index]")
@@ -79,10 +79,10 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
     else:
         assert "jet" in plottingVariable
         df = df.Filter("Jet_Index >= 0").Define("jet_pt","Jet_pt[Jet_Index]").Define("jet_eta","Jet_eta[Jet_Index]").Filter("pass_ditau > 0.5 && HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1 == 1")
-        h_den_os = df.Histo1D(CreateHistModel("denominator", iseta), plottingVariable)
+        h_den_os = df.Histo1D(CreateHistModel("denominator", iseta, True), plottingVariable)
         h_num_os = df.Filter("pass_ditau_jet > 0.5 && \
                      HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_PFJet60_CrossL1 == 1").Histo1D( \
-                     CreateHistModel("numerator", iseta), plottingVariable)
+                     CreateHistModel("numerator", iseta, True), plottingVariable)
     return h_num_os, h_den_os
 
 
