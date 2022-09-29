@@ -20,6 +20,7 @@ from RooPlottingTool import *
 # select the version
 TauID_ver = sys.argv[1]
 outFile   = sys.argv[2]
+useFiles = sys.argv[3] #8102, 8136, or filename.txt
 
 def create_rdataframe(folders, inputFiles=None):
     if not inputFiles:
@@ -55,7 +56,8 @@ def obtain_picontuple(df):
         df = df.Define("Tau_goodid",
             "getIntValue(Tau_decayMode, Tau_Index) != 5 && "
             "getIntValue(Tau_decayMode, Tau_Index) != 6 && "
-            "getIntValue(Tau_idDeepTau2017v2p1VSjet, Tau_Index) >= 16"
+            #"getIntValue(Tau_idDeepTau2017v2p1VSjet, Tau_Index) >= 16"
+            "getIntValue(Tau_idDeepTau2017v2p1VSjet, Tau_Index) >= 5"
         ).Define("tau_p4","Obj_p4(Tau_Index, Tau_pt, Tau_eta, Tau_phi, Tau_mass)")
         branches += ["Tau_goodid", "Tau_decayMode", "Tau_idDeepTau2017v2p1VSjet"] 
     elif TauID_ver == '2p5':
@@ -99,7 +101,12 @@ def obtain_picontuple(df):
     branches += ["pass_VBFasymtau_uppertauleg", "HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1"]
 
     ## 'VBFasymtau_lowertauleg
+    # FIXME : add back the pass_VBFasymtau_lowertauleg
     branches += ["HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1"]
+
+    ## VBFditau_Run3_tauleg
+    df = df.Define("pass_VBFditau_Run3_tauleg", PassMuTauFilter)
+    branches += ["pass_VBFditau_Run3_tauleg", "HLT_IsoMu27_MediumDeepTauPFTauHPS20_eta2p1_SingleL1"]
 
     ## VBF+ditau chargedIso Monitoring
     branches += ["HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1"]
@@ -118,10 +125,10 @@ if __name__ == '__main__':
 
     #inputFiles = (f'/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/SingleMuonV1/Files2/nano_aod_{i}.root' for i in range(0,79))
 
+    useFiles = str(useFiles)
+
     folders = [
-        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356943/",
         "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356944/",
-        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356945/",
         "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356946/",
         "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356947/",
         "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356948/",
@@ -129,11 +136,37 @@ if __name__ == '__main__':
         "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356951/",
         "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356954/",
         "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356955/",
-        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356956/"
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/savarghe/nanoaod/eraD/Fill8136/Muon/"
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356956/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/savarghe/nanoaod/eraD/Fill8136/Muon/"
     ]
 
-    df = create_rdataframe(folders)
+    if "8102" in useFiles:
+      print("Using run 8102 files")
+      folders = [entry for entry in folders if "8102" in entry]
+      df = create_rdataframe(folders)
+    elif "8136" in useFiles:
+      print("Using run 8136 files")
+      folders = [entry for entry in folders if "8136" in entry]
+      df = create_rdataframe(folders)
+    elif ".txt" in useFiles:
+      print("Using files in {}".format(useFiles))
+      folders = []
+      inputFiles_run3 = []
+      with open('Run3files.txt') as f:
+        for line in f:
+          line = line.replace('\n',"") # trim newline character
+          inputFiles_run3.append('root://cmsxrootd.fnal.gov/'+line) # prepend with redirector
+      df = ROOT.RDataFrame("Events", tuple(inputFiles_run3))
+
+    else:
+      print("Not a valid inputFiles argument")
+      print("Use 8102, 8136, or a text file of nanoaodfile locations")
+
+
+
+    #print(inputFiles_run3)
+
+    #sys.exit()
     df, branches = obtain_picontuple(df)
     branches.sort()
     branches = [

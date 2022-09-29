@@ -11,7 +11,10 @@ from RooPlottingTool import *
 parser = argparse.ArgumentParser(description='Skim full tuple.')
 parser.add_argument('--input', required=True, type=str, nargs='+', help="input files")
 parser.add_argument('--channel', required=True, type=str, 
-       help="ditau, mutau, etau, VBFasymtau_uppertauleg, VBFasymtau_lowertauleg, ditaujet_tauleg, or ditaujet_jetleg,VBFditau_old")
+       help="ditau, mutau, etau, \
+             VBFasymtau_uppertauleg, VBFasymtau_lowertauleg, \
+             ditaujet_tauleg, ditaujet_jetleg, \
+             VBFditau_old, VBFditau_Run3_tauleg")
 parser.add_argument('--run', required=True, type=str, help="runs or fill used (look at your input files)")
 parser.add_argument('--plot', required=True, type=str, help="plot name")
 parser.add_argument('--iseta', action='store_true', help="sets flag for eat plotting")
@@ -20,7 +23,8 @@ parser.add_argument('--var', required=True, type=str, help="tau_pt, tau_eta, jet
 
 possibleChannels = ["ditau", "mutau", "etau", \
                     "VBFasymtau_uppertauleg", "VBFasymtau_lowertauleg", \
-                    "ditaujet_tauleg", "ditaujet_jetleg","VBFditau_old"]
+                    "ditaujet_tauleg", "ditaujet_jetleg", \
+                    "VBFditau_old", "VBFditau_Run3_tauleg"]
 
 
 def obtain_histograms(df, channel, iseta, plottingVariable):
@@ -30,13 +34,14 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
     if channel != "ditaujet_jetleg":
         assert "jet" not in plottingVariable
         df = df.Filter("passZmass == 1").Define("tau_pt", "Tau_pt[Tau_Index]").Define("tau_eta", "Tau_eta[Tau_Index]")
-        if args.iseta:
+        if iseta:
           df = df.Filter('tau_pt > 35')  
         h_den_os = df.Histo1D(CreateHistModel("denominator", iseta), plottingVariable)
         # numerator histogram
         if channel == 'ditau':
             h_num_os = df.Filter("pass_ditau > 0.5 && \
-                HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1 == 1").Histo1D(CreateHistModel("numerator", iseta), plottingVariable, 'weight')
+                HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
+                CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
         elif channel == 'mutau':
             h_num_os = df.Filter("pass_mutau > 0.5 && \
@@ -48,15 +53,23 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
                          HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
                          CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
+        #FIXME: this should be lowertauleg, right?
         elif channel == 'VBFasymtau_lowertauleg':
             h_num_os = df.Filter("pass_VBFasymtau_uppertauleg > 0.5 && \
                          HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1 == 1").Histo1D( \
                          CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
+        #FIXME: this is Run2 mutau monitoring path, update everywhere
         elif channel == 'VBFditau_old':
             h_num_os = df.Filter("pass_VBFasymtau_uppertauleg > 0.5 && \
                          HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1 == 1").Histo1D( \
                          CreateHistModel("numerator", iseta), plottingVariable, 'weight')
+
+        elif channel == 'VBFditau_Run3_tauleg':
+            h_num_os = df.Filter("pass_VBFditau_Run3_tauleg > 0.5 && \
+                         HLT_IsoMu27_MediumDeepTauPFTauHPS20_eta2p1_SingleL1 == 1").Histo1D( \
+                         CreateHistModel("numerator", iseta), plottingVariable, 'weight')
+                         #HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1 == 1").Histo1D( \
 
         elif channel == 'ditaujet_tauleg':
             h_num_os = df.Filter("pass_ditau > 0.5 && \
@@ -82,5 +95,4 @@ if __name__ == "__main__":
     print(args.input)
     df = ROOT.RDataFrame("Events",tuple(args.input))
     h_num_os, h_den_os = obtain_histograms(df, channel, iseta, plottingVariable)
-
     plot(h_num_os, h_den_os, plottingVariable, channel, args.run, args.plot)

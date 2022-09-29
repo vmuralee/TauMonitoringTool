@@ -58,8 +58,9 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
               "Obj_p4(Muon_Index, Muon_pt, Muon_eta, Muon_phi, Muon_mass)").Define("muon_iso","getFloatValue(Muon_pfRelIso04_all, Muon_Index)")
 
     ## select tau (probe) candidate
+    print("FIXME: If Fill 8102, change Tau_rawDeepTau2018v2p5VSjet to Tau_rawDeepTau2017v2p1VSjet")
     df_probe = df_tag.Filter("Muon_Index >= 0 && muon_iso < 0.1 && HLT_IsoMu24_eta2p1 == 1").Define("Tau_Index",\
-                 "TauIndex(nTau, Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_dz, muon_p4)")
+                 "TauIndex(nTau, Tau_pt, Tau_eta, Tau_phi, Tau_mass, Tau_dz, muon_p4, Tau_rawDeepTau2018v2p5VSjet)")
 
     df_probe_id = df_probe.Filter("Tau_Index >= 0 && \
                                    Tau_decayMode[Tau_Index] != 5 && Tau_decayMode[Tau_Index] != 6 && Tau_idDeepTau2018v2p5VSjet[Tau_Index]==5").Define("tau_p4","Obj_p4(Tau_Index, Tau_pt, Tau_eta, Tau_phi, Tau_mass)")
@@ -161,7 +162,7 @@ def plot(h_num_os, h_den_os, plottingVariable, channel, add_to_label, plotName):
     ROOT.gStyle.SetOptStat(0); ROOT.gStyle.SetTextFont(42)
     c = ROOT.TCanvas("c", "", 800, 700)
 
-    gr = ROOT.TGraphAsymmErrors(h_num_os.GetPtr(),h_den_os.GetPtr(),"cp")
+    gr = ROOT.TGraphAsymmErrors(h_num_os.GetPtr(),h_den_os.GetPtr(),"n")
     gr.SetTitle("")
     gr.SetMarkerStyle(21)
     gr.SetMarkerSize(1.5)
@@ -180,6 +181,7 @@ def plot(h_num_os, h_den_os, plottingVariable, channel, add_to_label, plotName):
     label.SetTextSize(0.030); label.DrawLatex(0.630, 0.920, "#sqrt{s} = 13.6 TeV, %s" % add_to_label)
 
     c.SaveAs("%s_%s_%s.pdf" % (plotName, channel, plottingVariable))
+    c.SaveAs("%s_%s_%s.png" % (plotName, channel, plottingVariable))
 
 
 if __name__ == '__main__':
@@ -187,24 +189,30 @@ if __name__ == '__main__':
     channel = args.channel
     iseta = args.iseta
     plottingVariable = args.var
+    run = args.run
 
     #inputFiles = (f'/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/SingleMuonV1/Files2/nano_aod_{i}.root' for i in range(0,79))
 
     folders = [
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356943/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356944/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356945/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356946/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356947/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356948/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356949/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356951/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356954/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356955/",
-        # "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356956/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356944/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356946/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356947/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356948/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356949/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356951/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356954/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356955/",
+        "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/Muon_Fill8102/Run356956/",
         "/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/savarghe/nanoaod/eraD/Fill8136/Muon/"
     ]
 
+    if "8102" in run:
+      print("Using run 8102 files")
+      folders = [entry for entry in folders if "8102" in entry]
+    else:
+      print("Using run 8136 files")
+      folders = [entry for entry in folders if "8136" in entry]
+
     df = create_rdataframe(folders)
     h_num_os, h_den_os = obtain_histograms(df, channel, iseta, plottingVariable)
-    plot(h_num_os, h_den_os, plottingVariable, channnel, args.run, args.plot)
+    plot(h_num_os, h_den_os, plottingVariable, channel, run, args.plot)
