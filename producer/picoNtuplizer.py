@@ -56,17 +56,22 @@ def obtain_picontuple(df):
         df = df.Define("Tau_goodid",
             "getIntValue(Tau_decayMode, Tau_Index) != 5 && "
             "getIntValue(Tau_decayMode, Tau_Index) != 6 && "
-            #"getIntValue(Tau_idDeepTau2017v2p1VSjet, Tau_Index) >= 16"
-            "getIntValue(Tau_idDeepTau2017v2p1VSjet, Tau_Index) >= 5"
+            "getIntValue(Tau_idDeepTau2017v2p1VSjet, Tau_Index) >= 5 &&"
+            "getIntValue(Tau_idDeepTau2017v2p1VSmu, Tau_Index) >= 1 &&"
+            "getIntValue(Tau_idDeepTau2017v2p1VSe, Tau_Index) >= 1"
         ).Define("tau_p4","Obj_p4(Tau_Index, Tau_pt, Tau_eta, Tau_phi, Tau_mass)")
-        branches += ["Tau_goodid", "Tau_decayMode", "Tau_idDeepTau2017v2p1VSjet"] 
+        branches += ["Tau_goodid", "Tau_decayMode",
+            "Tau_idDeepTau2017v2p1VSjet", "Tau_idDeepTau2017v2p1VSmu", "Tau_idDeepTau2017v2p1VSe"]
     elif TauID_ver == '2p5':
         df = df.Define("Tau_goodid",
             "getIntValue(Tau_decayMode, Tau_Index) != 5 && "
             "getIntValue(Tau_decayMode, Tau_Index) != 6 && "
-            "getIntValue(Tau_idDeepTau2018v2p5VSjet, Tau_Index) >= 5"
+            "getIntValue(Tau_idDeepTau2018v2p5VSjet, Tau_Index) >= 5 &&"
+            "getIntValue(Tau_idDeepTau2018v2p5VSmu, Tau_Index) >= 1 &&"
+            "getIntValue(Tau_idDeepTau2018v2p5VSe, Tau_Index) >= 1"
         ).Define("tau_p4","Obj_p4(Tau_Index, Tau_pt, Tau_eta, Tau_phi, Tau_mass)")
-        branches += ["Tau_goodid", "Tau_decayMode", "Tau_idDeepTau2018v2p5VSjet"]
+        branches += ["Tau_goodid", "Tau_decayMode",
+            "Tau_idDeepTau2018v2p5VSjet", "Tau_idDeepTau2018v2p5VSmu", "Tau_idDeepTau2018v2p5VSe"]
 
     # Calculate Efficiency
     df = df.Define('weight',
@@ -162,8 +167,6 @@ if __name__ == '__main__':
       print("Not a valid inputFiles argument")
       print("Use 8102, 8136, or a text file of nanoaodfile locations")
 
-
-
     #print(inputFiles_run3)
 
     #sys.exit()
@@ -172,7 +175,8 @@ if __name__ == '__main__':
     branches = [
         "nTau", "Tau_pt", "Tau_eta", "Tau_phi", "Tau_mass",
         "nMuon", "Muon_pt", "Muon_eta", "Muon_phi", "Muon_mass",
-        "nJet", "Jet_pt", "Jet_eta", "Jet_phi", "Jet_mass"] + branches
+        "nJet", "Jet_pt", "Jet_eta", "Jet_phi", "Jet_mass",
+        "nTrigObj", "TrigObj_l1pt", "TrigObj_l1iso"] + branches
     branch_list = ROOT.vector('string')()
     for branch_name in branches:
         branch_list.push_back(branch_name)

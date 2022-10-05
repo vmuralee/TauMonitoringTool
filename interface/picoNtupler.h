@@ -29,6 +29,7 @@ float ZMass(TLorentzVector tau_p4,TLorentzVector muon_p4) {
     return -999.;
   return (tau_p4 + muon_p4).M();
 }
+
 float CalcMT(TLorentzVector lep_p4,float met_pt,float met_phi){
   if (lep_p4.Pt() <= 0)
     return -999.;
@@ -38,6 +39,7 @@ float CalcMT(TLorentzVector lep_p4,float met_pt,float met_phi){
   return std::sqrt( 2.0 * lep_p4.Pt() * met_p4.Pt() * ( 1.0 - std::cos(delta_phi) ) );
 
 }
+
 float deltaR(float eta_1, float eta_2, float phi_1, float phi_2){
    const float deta = eta_1 - eta_2;
    const float dphi = ROOT::Math::VectorUtil::Phi_mpi_pi(phi_1 - phi_2);
@@ -45,22 +47,19 @@ float deltaR(float eta_1, float eta_2, float phi_1, float phi_2){
 
    return sqrt(dRsq);
 }
-bool PassTagFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,float muon_pt,float muon_eta,float muon_phi){
-   
-   for(int it=0; it < ntrig; it++){
-     const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it],trig_eta[it],trig_phi[it],0);
-     float dR = deltaR(trig.Eta(),muon_eta,trig.Phi(),muon_phi);
-     if (dR < 0.5){
+
+int PassTagFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,float muon_pt,float muon_eta,float muon_phi){
+  for(int it=0; it < ntrig; it++){
+    const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it],trig_eta[it],trig_phi[it],0);
+    float dR = deltaR(trig.Eta(),muon_eta,trig.Phi(),muon_phi);
+    if (dR < 0.5){
       if((trig_bits[it] & 8) != 0 && trig_id[it] == 13){
-           return true;
+        return it;
       }
-   }
+    }
   }
-  return false;
+  return -1;
 }
-
-
-
 
 int MuonIndex(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,UInt_t nMu,Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1,Vec_t pfIso){
   int mu_index = -1;
@@ -71,7 +70,7 @@ int MuonIndex(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t tri
       if(muon.Pt() < 24)continue;
       if(std::fabs(muon.Eta()) > 2.1)continue;
       //if(mu_iso > 0.1)continue;
-      if(!PassTagFilter(ntrig,trig_id,trig_bits,trig_pt,trig_eta,trig_phi,muon.Pt(),muon.Eta(),muon.Phi()))continue;
+      if(PassTagFilter(ntrig,trig_id,trig_bits,trig_pt,trig_eta,trig_phi,muon.Pt(),muon.Eta(),muon.Phi()) < 0) continue;
       mu_index = imu;
     }
   }
@@ -97,8 +96,8 @@ int TauIndex(UInt_t ntau, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Ve
       if(tau.Pt() < 18) continue;
       if(std::fabs(tau.Eta()) > 2.1) continue; 
       if(Tau_rawIsodR03[itau] > tau_iso){
-	tau_iso = Tau_rawIsodR03[itau];
-	tau_index = itau;
+        tau_iso = Tau_rawIsodR03[itau];
+        tau_index = itau;
       }
     }  
   }
@@ -122,66 +121,66 @@ int JetIndex(UInt_t njet, Vec_t pt_1, Vec_t eta_1, Vec_t phi_1, Vec_t mass_1, Ve
   return jet_index;
 }
 
-bool PassDiTauFilter(UInt_t ntrig, Vec_i trig_id, Vec_i trig_bits, Vec_t trig_pt, Vec_t trig_eta, Vec_t trig_phi, float tau_pt, float tau_eta, float tau_phi) {
+int PassDiTauFilter(UInt_t ntrig, Vec_i trig_id, Vec_i trig_bits, Vec_t trig_pt, Vec_t trig_eta, Vec_t trig_phi, float tau_pt, float tau_eta, float tau_phi) {
   if (tau_pt <= 0)
-    return false;
+    return -1;
   for(int it=0; it < ntrig; it++){
     const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it],trig_eta[it],trig_phi[it],0);
     float dR = deltaR(trig.Eta(),tau_eta,trig.Phi(),tau_phi);
     if (dR < 0.5){
       if((trig_bits[it] & 512) != 0 && (trig_bits[it] & 1024) != 0 && trig_id[it] == 15){ 
-        return true;
+        return it;
       }
     }
   }
-  return false;
+  return -1;
 }
 
-bool PassDiTauJetFilter(UInt_t ntrig, Vec_i trig_id, Vec_i trig_bits, Vec_t trig_pt, Vec_t trig_eta, Vec_t trig_phi, float jet_pt, float jet_eta, float jet_phi){
+int PassDiTauJetFilter(UInt_t ntrig, Vec_i trig_id, Vec_i trig_bits, Vec_t trig_pt, Vec_t trig_eta, Vec_t trig_phi, float jet_pt, float jet_eta, float jet_phi){
   if (jet_pt <= 0)
-    return false;
+    return -1;
   for(int it = 0; it < ntrig; it++) {
     const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it], trig_eta[it], trig_phi[it], 0);
     float dR = deltaR(trig.Eta(), jet_eta, trig.Phi(), jet_phi);
     if (dR < 0.5) {
       if((trig_bits[it] & 2097152) != 0 && trig_id[it] == 1) {
         if(trig_id[it] == 1) {
-          return true;
+          return it;
         }
       }
     }
   }
-  return false;
+  return -1;
 }
 
-bool PassMuTauFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,float tau_pt,float tau_eta,float tau_phi){
+int PassMuTauFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,float tau_pt,float tau_eta,float tau_phi){
   if (tau_pt <= 0)
-    return false;
+    return -1;
   for(int it=0; it < ntrig; it++){
     const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it],trig_eta[it],trig_phi[it],0);
     float dR = deltaR(trig.Eta(),tau_eta,trig.Phi(),tau_phi);
     if (dR < 0.5){
       if((trig_bits[it] & 512) != 0  && trig_id[it] == 15){ 
-          return true;
+          return it;
       }
     }
   }
-  return false;
+  return -1;
 }
 
-bool PassElTauFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,Vec_t trig_l1pt,Vec_i trig_l1iso,float tau_pt,float tau_eta,float tau_phi){
+int PassElTauFilter(UInt_t ntrig,Vec_i trig_id,Vec_i trig_bits,Vec_t trig_pt,Vec_t trig_eta,Vec_t trig_phi,Vec_t trig_l1pt,Vec_i trig_l1iso,float tau_pt,float tau_eta,float tau_phi){
    
-   for(int it=0; it < ntrig; it++){
-     const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it],trig_eta[it],trig_phi[it],0);
-     float dR = deltaR(trig.Eta(),tau_eta,trig.Phi(),tau_phi);
-     if (dR < 0.5){
-       if((trig_bits[it] & 512) != 0  && trig_id[it] == 15){ 
-	 if(trig_l1pt[it] > 26 && trig_l1iso[it] > 0)
-           return true;
+  for(int it=0; it < ntrig; it++){
+    const ROOT::Math::PtEtaPhiMVector trig(trig_pt[it],trig_eta[it],trig_phi[it],0);
+    float dR = deltaR(trig.Eta(),tau_eta,trig.Phi(),tau_phi);
+    if (dR < 0.5){
+      if((trig_bits[it] & 512) != 0  && trig_id[it] == 15){ 
+        if(trig_l1pt[it] > 26 && trig_l1iso[it] > 0)
+          return it;
       }
-   }
+    }
   }
-  return false;
+  return -1;
 }
 
 float LeadingTauPT(Vec_t tau_pt,Vec_t tau_eta,Vec_t tau_phi,Vec_t tau_m,int index){
