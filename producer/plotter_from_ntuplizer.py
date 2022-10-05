@@ -39,48 +39,53 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
         h_den_os = df.Histo1D(CreateHistModel("denominator", iseta), plottingVariable)
         # numerator histogram
         if channel == 'ditau':
-            h_num_os = df.Filter("pass_ditau > 0.5 && \
+            h_num_os = df.Filter("pass_ditau >= 0 && \
                 HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
                 CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
         elif channel == 'mutau':
-            h_num_os = df.Filter("pass_mutau > 0.5 && \
+            h_num_os = df.Filter("pass_mutau >= 0 && \
                 HLT_IsoMu20_eta2p1_LooseDeepTauPFTauHPS27_eta2p1_CrossL1 == 1").Histo1D( \
                 CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
         elif channel == 'VBFasymtau_uppertauleg':
-            h_num_os = df.Filter("pass_VBFasymtau_uppertauleg > 0.5 && \
+            h_num_os = df.Filter("pass_VBFasymtau_uppertauleg >= 0 && \
                          HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
                          CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
         #FIXME: this should be lowertauleg, right?
         elif channel == 'VBFasymtau_lowertauleg':
-            h_num_os = df.Filter("pass_VBFasymtau_uppertauleg > 0.5 && \
+            h_num_os = df.Filter("pass_VBFasymtau_uppertauleg >= 0 && \
                          HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1 == 1").Histo1D( \
                          CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
         #FIXME: this is Run2 mutau monitoring path, update everywhere
         elif channel == 'VBFditau_old':
-            h_num_os = df.Filter("pass_VBFasymtau_uppertauleg > 0.5 && \
+            h_num_os = df.Filter("pass_VBFasymtau_uppertauleg >= 0 && \
                          HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1 == 1").Histo1D( \
                          CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
         elif channel == 'VBFditau_Run3_tauleg':
-            h_num_os = df.Filter("pass_VBFditau_Run3_tauleg > 0.5 && \
+            h_num_os = df.Filter("pass_VBFditau_Run3_tauleg >= 0 && \
                          HLT_IsoMu27_MediumDeepTauPFTauHPS20_eta2p1_SingleL1 == 1").Histo1D( \
                          CreateHistModel("numerator", iseta), plottingVariable, 'weight')
                          #HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1 == 1").Histo1D( \
 
         elif channel == 'ditaujet_tauleg':
-            h_num_os = df.Filter("pass_ditau > 0.5 && \
-                         HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
-                         CreateHistModel("numerator", iseta), plottingVariable, 'weight')
+            h_num_os = df.Filter("pass_ditau >= 0 && \
+                         HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1 == 1"
+                         ).Filter("TrigObj_l1pt.at(pass_ditau) >= 26 && TrigObj_l1iso.at(pass_ditau) > 0"
+                         ).Histo1D(CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
     else:
         assert "jet" in plottingVariable
-        df = df.Filter("Jet_Index >= 0").Define("jet_pt","Jet_pt[Jet_Index]").Define("jet_eta","Jet_eta[Jet_Index]").Filter("pass_ditau > 0.5 && HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1 == 1")
+        df = df.Filter("Jet_Index >= 0"
+            ).Define("jet_pt","Jet_pt[Jet_Index]"
+            ).Define("jet_eta","Jet_eta[Jet_Index]"
+            ).Filter("pass_ditau > 0 && HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1 == 1"
+            ).Filter("TrigObj_l1pt.at(pass_ditau) >= 26 && TrigObj_l1iso.at(pass_ditau) > 0")
         h_den_os = df.Histo1D(CreateHistModel("denominator", iseta, True), plottingVariable)
-        h_num_os = df.Filter("pass_ditau_jet > 0.5 && \
+        h_num_os = df.Filter("pass_ditau_jet >= 0 && \
                      HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_PFJet60_CrossL1 == 1").Histo1D( \
                      CreateHistModel("numerator", iseta, True), plottingVariable)
     return h_num_os, h_den_os
