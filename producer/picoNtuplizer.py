@@ -157,7 +157,8 @@ if __name__ == '__main__':
       print("Using files in {}".format(useFiles))
       folders = []
       inputFiles_run3 = []
-      with open('Run3files.txt') as f:
+      #with open('Run3files.txt') as f:
+      with open(useFiles) as f:
         for line in f:
           line = line.replace('\n',"") # trim newline character
           inputFiles_run3.append('root://cmsxrootd.fnal.gov/'+line) # prepend with redirector
