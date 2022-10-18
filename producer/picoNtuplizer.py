@@ -105,8 +105,7 @@ def obtain_picontuple(df):
     df = df.Define("pass_VBFasymtau_uppertauleg", PassMuTauFilter)
     branches += ["pass_VBFasymtau_uppertauleg", "HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1"]
 
-    ## 'VBFasymtau_lowertauleg
-    # FIXME : add back the pass_VBFasymtau_lowertauleg
+    ## VBFasymtau_lowertauleg
     branches += ["HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1"]
 
     ## VBFditau_Run3_tauleg
@@ -149,10 +148,12 @@ if __name__ == '__main__':
       print("Using run 8102 files")
       folders = [entry for entry in folders if "8102" in entry]
       df = create_rdataframe(folders)
+
     elif "8136" in useFiles:
       print("Using run 8136 files")
       folders = [entry for entry in folders if "8136" in entry]
       df = create_rdataframe(folders)
+
     elif ".txt" in useFiles:
       print("Using files in {}".format(useFiles))
       folders = []
@@ -168,9 +169,6 @@ if __name__ == '__main__':
       print("Not a valid inputFiles argument")
       print("Use 8102, 8136, or a text file of nanoaodfile locations")
 
-    #print(inputFiles_run3)
-
-    #sys.exit()
     df, branches = obtain_picontuple(df)
     branches.sort()
     branches = [
