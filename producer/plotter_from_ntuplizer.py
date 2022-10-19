@@ -15,7 +15,7 @@ parser.add_argument('--channel', required=True, type=str,
              VBFasymtau_uppertauleg, VBFasymtau_lowertauleg, \
              ditaujet_tauleg, ditaujet_jetleg, \
              VBFditau_old, VBFditau_Run3_tauleg")
-parser.add_argument('--run', required=True, type=str, help="runs or fill used (look at your input files)")
+parser.add_argument('--data_label', required=True, type=str, help="graph label describing dataset used")
 parser.add_argument('--plot', required=True, type=str, help="plot name")
 parser.add_argument('--iseta', action='store_true', help="sets flag for eat plotting")
 parser.add_argument('--var', required=True, type=str, help="tau_pt, tau_eta, jet_pt, jet_eta")
@@ -97,7 +97,7 @@ if __name__ == "__main__":
     channel = args.channel
     iseta = args.iseta
     plottingVariable = args.var
-    print(args.input)
+    print(f"input files: {args.input}")
     df = ROOT.RDataFrame("Events",tuple(args.input))
     h_num_os, h_den_os = obtain_histograms(df, channel, iseta, plottingVariable)
-    plot(h_num_os, h_den_os, plottingVariable, channel, args.run, args.plot)
+    plot(h_num_os, h_den_os, plottingVariable, channel, args.data_label, args.plot)

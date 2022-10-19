@@ -1,12 +1,17 @@
 from plotter_from_ntuplizer import *
 
-df = ROOT.RDataFrame("Events", "/eos/user/b/ballmond/OfficialNanoAODSamples/FullOfficialNanoAODv2p5.root")
+#df = ROOT.RDataFrame("Events", "/eos/user/b/ballmond/OfficialNanoAODSamples/FullOfficialNanoAODv2p5.root")
+df = ROOT.RDataFrame("Events", "/eos/user/b/ballmond/muonNanoAOD2022D/*.root")
 
 plotname = "officialplot"
 label = "Muon 2022D"
 
 histos = {}
 channel_variables = [
+    ("ditau", ["tau_pt", "tau_eta"]),
+    ("mutau", ["tau_pt", "tau_eta"]),
+    ("VBFasymtau_uppertauleg", ["tau_pt", "tau_eta"]),
+    ("VBFasymtau_lowertauleg", ["tau_pt", "tau_eta"]),
     ("ditaujet_tauleg", ["tau_pt", "tau_eta"]),
     ("ditaujet_jetleg", ["jet_pt", "jet_eta"]),
 ]
