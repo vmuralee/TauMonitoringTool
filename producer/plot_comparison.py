@@ -29,7 +29,7 @@ possibleChannels = ["ditau", "mutau", "etau", \
                     "ditaujet_tauleg", "ditaujet_jetleg",\
                     "VBFditau_old", "VBFditau_Run3_tauleg"]
 
-def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVariable, channel_A, channel_B, add_to_label, plotName):
+def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVariable, channel_A, channel_B, add_to_label, plotName, legends=["v2p1", "v2p5"]):
     print("Plotting {} of {} and {}".format(plottingVariable, channel_A, channel_B))
     ROOT.gStyle.SetOptStat(0); ROOT.gStyle.SetTextFont(42)
     c = ROOT.TCanvas("c", "", 800, 700)
@@ -80,8 +80,8 @@ def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVari
     # add legend
     leg = ROOT.TLegend(0.55, 0.15, 0.90, 0.45)
     leg.SetTextSize(0.045)
-    leg.AddEntry(gr_A, "v2p1")
-    leg.AddEntry(gr_B, "v2p5")
+    leg.AddEntry(gr_A, legends[0])
+    leg.AddEntry(gr_B, legends[1])
     leg.Draw()
     # add new leg
     # make user friendly
