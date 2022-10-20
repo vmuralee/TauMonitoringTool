@@ -5,6 +5,7 @@ ROOT.gROOT.SetBatch(True)
 
 import argparse
 from plotter_from_ntuplizer import obtain_histograms
+from channel_to_HLT_map import channel_to_HLT_map
 
 
 parser = argparse.ArgumentParser(description='Skim full tuple.')
@@ -61,7 +62,7 @@ def plot_comparison(h_num_os_A, h_den_os_A, \
     gr_B.SetLineColor(9) # this is blue
     gr_B.SetMarkerStyle(20) # this is a filled circle
     gr_B.SetMarkerColor(12) # this is a light grey
-    gr_B.SetMarkerSize(1.4)
+    gr_B.SetMarkerSize(1.3)
 
     mg.Add(gr_A)
     mg.Add(gr_B)
@@ -82,6 +83,7 @@ def plot_comparison(h_num_os_A, h_den_os_A, \
         label.DrawLatex(0.8, 0.03, "#eta_{#tau}")
     label.SetTextSize(0.040); label.DrawLatex(0.100, 0.920, "#bf{CMS Run3 Data}")
     label.SetTextSize(0.030); label.DrawLatex(0.630, 0.920, "#sqrt{s} = 13.6 TeV, %s" % add_to_label)
+    label.SetTextSize(0.025); label.DrawLatex(0.110, 0.870, channel_to_HLT_map[channel_A])
 
     # add legend
     leg = ROOT.TLegend(0.60, 0.15, 0.90, 0.25)
