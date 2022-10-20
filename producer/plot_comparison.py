@@ -29,7 +29,13 @@ possibleChannels = ["ditau", "mutau", "etau", \
                     "ditaujet_tauleg", "ditaujet_jetleg",\
                     "VBFditau_old", "VBFditau_Run3_tauleg"]
 
-def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVariable, channel_A, channel_B, add_to_label, plotName, legends=["v2p1", "v2p5"]):
+def plot_comparison(h_num_os_A, h_den_os_A, \
+                    h_num_os_B, h_den_os_B, \
+                    plottingVariable, \
+                    channel_A, channel_B, \
+                    add_to_label, plotName, \
+                    legends=["v2p1", "v2p5"]):
+
     print("Plotting {} of {} and {}".format(plottingVariable, channel_A, channel_B))
     ROOT.gStyle.SetOptStat(0); ROOT.gStyle.SetTextFont(42)
     c = ROOT.TCanvas("c", "", 800, 700)
@@ -67,9 +73,9 @@ def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVari
 
     label = ROOT.TLatex(); label.SetNDC(True)
     if(plottingVariable == "tau_pt" or plottingVariable=="tau_l1pt"):
-        label.DrawLatex(0.8, 0.03, "#tau_{pT}")
+        label.DrawLatex(0.8, 0.03, "p_{T}^{#tau}") ##tau_{pT}")
     elif(plottingVariable == "jet_pt"):
-        label.DrawLatex(0.8, 0.03, "jet_{pT}")
+        label.DrawLatex(0.8, 0.03, "p_{T}^{jet}") #jet_{pT}")
     elif(plottingVariable == "jet_eta"):
         label.DrawLatex(0.8, 0.03, "#eta_{jet}")
     else:
@@ -78,13 +84,11 @@ def plot_comparison(h_num_os_A, h_den_os_A, h_num_os_B, h_den_os_B, plottingVari
     label.SetTextSize(0.030); label.DrawLatex(0.630, 0.920, "#sqrt{s} = 13.6 TeV, %s" % add_to_label)
 
     # add legend
-    leg = ROOT.TLegend(0.55, 0.15, 0.90, 0.45)
-    leg.SetTextSize(0.045)
+    leg = ROOT.TLegend(0.60, 0.15, 0.90, 0.25)
+    leg.SetTextSize(0.025)
     leg.AddEntry(gr_A, legends[0])
     leg.AddEntry(gr_B, legends[1])
     leg.Draw()
-    # add new leg
-    # make user friendly
 
     combined_name = channel_A + "_" + channel_B
     c.SaveAs("%s_%s_%s.pdf" % (plotName, combined_name, plottingVariable))
