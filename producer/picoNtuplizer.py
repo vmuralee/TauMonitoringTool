@@ -112,7 +112,7 @@ def obtain_picontuple(df):
     df = df.Define("pass_VBFditau_Run3_tauleg", PassMuTauFilter)
     branches += ["pass_VBFditau_Run3_tauleg", "HLT_IsoMu27_MediumDeepTauPFTauHPS20_eta2p1_SingleL1"]
 
-    ## VBF+ditau chargedIso Monitoring
+    ## mutau_Run2
     branches += ["HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1"]
     ## ditaujet_jetleg
     df = df.Define("pass_ditau_jet",

@@ -14,7 +14,7 @@ parser.add_argument('--channel', required=True, type=str,
        help="ditau, mutau, etau, \
              VBFasymtau_uppertauleg, VBFasymtau_lowertauleg, \
              ditaujet_tauleg, ditaujet_jetleg, \
-             VBFditau_old, VBFditau_Run3_tauleg")
+             mutau_Run2, VBFditau_Run3_tauleg")
 parser.add_argument('--data_label', required=True, type=str, help="graph label describing dataset used")
 parser.add_argument('--plot', required=True, type=str, help="plot name")
 parser.add_argument('--iseta', action='store_true', help="sets flag for eat plotting")
@@ -24,7 +24,7 @@ parser.add_argument('--var', required=True, type=str, help="tau_pt, tau_eta, jet
 possibleChannels = ["ditau", "mutau", "etau", \
                     "VBFasymtau_uppertauleg", "VBFasymtau_lowertauleg", \
                     "ditaujet_tauleg", "ditaujet_jetleg", \
-                    "VBFditau_old", "VBFditau_Run3_tauleg"]
+                    "mutau_Run2", "VBFditau_Run3_tauleg"]
 
 
 def obtain_histograms(df, channel, iseta, plottingVariable):
@@ -50,8 +50,9 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
 
         elif channel == 'VBFasymtau_uppertauleg':
             h_num_os = df.Filter("pass_VBFasymtau_uppertauleg >= 0 && \
-                         HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
-                         CreateHistModel("numerator", iseta), plottingVariable, 'weight')
+                         HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1 == 1"\
+                         ).Filter("TrigObj_l1pt.at(pass_ditau) >= 45 && TrigObj_l1iso.at(pass_ditau) > 0"\
+                         ).Histo1D(CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
         #FIXME: this should be lowertauleg, right?
         elif channel == 'VBFasymtau_lowertauleg':
@@ -59,12 +60,14 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
                          HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1 == 1").Histo1D( \
                          CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
-        #FIXME: this is Run2 mutau monitoring path, update everywhere
-        elif channel == 'VBFditau_old':
+        #FIXME: this is Run2 mutau monitoring path
+        elif channel == 'mutau_Run2':
             h_num_os = df.Filter("pass_VBFasymtau_uppertauleg >= 0 && \
                          HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1 == 1").Histo1D( \
                          CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
+        # could be monitored equally well with HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1_v2
+        # this was the intention when that path was made, but somehow the IsoMu27 version wasn't removed
         elif channel == 'VBFditau_Run3_tauleg':
             h_num_os = df.Filter("pass_VBFditau_Run3_tauleg >= 0 && \
                          HLT_IsoMu27_MediumDeepTauPFTauHPS20_eta2p1_SingleL1 == 1").Histo1D( \
