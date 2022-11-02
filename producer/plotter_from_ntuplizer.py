@@ -51,16 +51,18 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
         elif channel == 'VBFasymtau_uppertauleg':
             h_num_os = df.Filter("pass_VBFasymtau_uppertauleg >= 0 && \
                          HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1 == 1"\
-                         ).Filter("TrigObj_l1pt.at(pass_ditau) >= 45 && TrigObj_l1iso.at(pass_ditau) > 0"\
+                         ).Filter("TrigObj_l1pt.at(pass_mutau) >= 45 && TrigObj_l1iso.at(pass_mutau) > 0"
                          ).Histo1D(CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
         elif channel == 'VBFasymtau_lowertauleg':
-            h_num_os = df.Filter("pass_VBFasymtau_lowertauleg >= 0 && \
+            #h_num_os = df.Filter("pass_VBFasymtau_lowertauleg >= 0 && \
+            h_num_os = df.Filter("pass_VBFasymtau_uppertauleg >= 0 && \
                          HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1 == 1").Histo1D( \
                          CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
         elif channel == 'mutau_Run2':
-            h_num_os = df.Filter("pass_mutau_Run2 >= 0 && \
+            #h_num_os = df.Filter("pass_mutau_Run2 >= 0 && \
+            h_num_os = df.Filter("pass_VBFasymtau_uppertauleg >= 0 && \
                          HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1 == 1").Histo1D( \
                          CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
