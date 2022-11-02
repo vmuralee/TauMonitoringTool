@@ -54,15 +54,13 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
                          ).Filter("TrigObj_l1pt.at(pass_ditau) >= 45 && TrigObj_l1iso.at(pass_ditau) > 0"\
                          ).Histo1D(CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
-        #FIXME: this should be lowertauleg, right?
         elif channel == 'VBFasymtau_lowertauleg':
-            h_num_os = df.Filter("pass_VBFasymtau_uppertauleg >= 0 && \
+            h_num_os = df.Filter("pass_VBFasymtau_lowertauleg >= 0 && \
                          HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1 == 1").Histo1D( \
                          CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
-        #FIXME: this is Run2 mutau monitoring path
         elif channel == 'mutau_Run2':
-            h_num_os = df.Filter("pass_VBFasymtau_uppertauleg >= 0 && \
+            h_num_os = df.Filter("pass_mutau_Run2 >= 0 && \
                          HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1 == 1").Histo1D( \
                          CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 

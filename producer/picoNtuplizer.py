@@ -106,14 +106,20 @@ def obtain_picontuple(df):
     branches += ["pass_VBFasymtau_uppertauleg", "HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1"]
 
     ## VBFasymtau_lowertauleg
-    branches += ["HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1"]
+    df = df.Define("pass_VBFasymtau_lowertauleg", PassMuTauFilter)
+    branches += ["pass_VBFasymtau_lowertauleg", "HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1"]
 
     ## VBFditau_Run3_tauleg
     df = df.Define("pass_VBFditau_Run3_tauleg", PassMuTauFilter)
     branches += ["pass_VBFditau_Run3_tauleg", "HLT_IsoMu27_MediumDeepTauPFTauHPS20_eta2p1_SingleL1"]
+    # could be monitored equally well with HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1_v2
+    # would be good to check and remove the IsoMu27 path
+    #branches += ["pass_VBFditau_Run3_tauleg", "HLT_IsoMu24_MediumDeepTauPFTauHPS20_eta2p1_SingleL1"]
 
     ## mutau_Run2
-    branches += ["HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1"]
+    df = df.Define("pass_mutau_Run2", PassMuTauFilter)
+    branches += ["pass_mutau_Run2", "HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1"]
+
     ## ditaujet_jetleg
     df = df.Define("pass_ditau_jet",
         "PassDiTauJetFilter(nTrigObj, TrigObj_id, TrigObj_filterBits, TrigObj_pt, TrigObj_eta, TrigObj_phi, \
