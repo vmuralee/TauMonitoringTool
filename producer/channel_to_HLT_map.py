@@ -8,7 +8,7 @@ channel_to_HLT_map = {
   "ditaujet_tauleg"        : "HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1",
   "ditaujet_jetleg"        : "HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_PFJet60_CrossL1",
 
-  "VBFditau_old"           : "HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1",
+  "mutau_Run2"           : "HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1",
   "VBFditau_Run3_tauleg"   : "HLT_IsoMu27_MediumDeepTauPFTauHPS20_eta2p1_SingleL1",
 }
 
