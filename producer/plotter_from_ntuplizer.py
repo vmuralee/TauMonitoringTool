@@ -27,7 +27,10 @@ possibleChannels = ["ditau", "mutau", "etau", \
                     "VBFditau_old", "VBFditau_Run3_tauleg"]
 
 
-def obtain_histograms(df, channel, iseta, plottingVariable):
+def obtain_histograms(df, channel, iseta, plottingVariable, additional_selection=None):
+
+    if additional_selection:
+        df = df.Filter(additional_selection)
 
     df = df.Filter("Muon_Index >= 0 && muon_iso < 0.1 && Tau_goodid == 1")
 
@@ -39,8 +42,10 @@ def obtain_histograms(df, channel, iseta, plottingVariable):
         h_den_os = df.Histo1D(CreateHistModel("denominator", iseta), plottingVariable)
         # numerator histogram
         if channel == 'ditau':
+            # HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
             h_num_os = df.Filter("pass_ditau >= 0 && \
-                HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1 == 1").Histo1D( \
+                HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1 == 1").Histo1D(
+                # HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1 == 1").Filter("TrigObj_l1pt.at(pass_ditau) >= 26 && TrigObj_l1iso.at(pass_ditau) > 0").Histo1D( \
                 CreateHistModel("numerator", iseta), plottingVariable, 'weight')
 
         elif channel == 'mutau':

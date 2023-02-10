@@ -1,12 +1,27 @@
 from plotter_from_ntuplizer import *
 
-df = ROOT.RDataFrame("Events", "/eos/user/b/ballmond/OfficialNanoAODSamples/FullOfficialNanoAODv2p5.root")
+#folder = "/eos/user/b/ballmond/muonNanoAOD2022D/"
+folder = "/eos/user/j/jleonhol/muonNanoAOD2022E/"
 
-plotname = "officialplot"
-label = "Muon 2022D"
+def create_rdataframe(folders=None, inputFiles=None):
+    if not inputFiles:
+        inputFiles = []
+        for folder in folders:
+            files = os.listdir(folder)
+            inputFiles += [folder + f for f in files if f.endswith(".root")]
+    print(inputFiles)
+    return ROOT.RDataFrame("Events", tuple(inputFiles))
+df = create_rdataframe(folders=[folder])
+# df = ROOT.RDataFrame("Events", "/eos/user/b/ballmond/OfficialNanoAODSamples/FullOfficialNanoAODv2p5.root")
+# df = ROOT.RDataFrame("Events", "/eos/home-v/vmuralee/picoNtuples/picoNtupler2022D.root")
+# df = ROOT.RDataFrame("Events", "./testntuple.root")
+
+plotname = "muon2022e_notrigobj"
+label = "Muon - 2022E (no trig. obj.)"
 
 histos = {}
 channel_variables = [
+    ("ditau", ["tau_pt", "tau_eta"]),
     ("ditaujet_tauleg", ["tau_pt", "tau_eta"]),
     ("ditaujet_jetleg", ["jet_pt", "jet_eta"]),
 ]
