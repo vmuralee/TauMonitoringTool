@@ -22,6 +22,9 @@ label = "Muon - 2022E (no trig. obj.)"
 histos = {}
 channel_variables = [
     ("ditau", ["tau_pt", "tau_eta"]),
+    ("mutau", ["tau_pt", "tau_eta"]),
+    ("VBFasymtau_uppertauleg", ["tau_pt", "tau_eta"]),
+    ("VBFasymtau_lowertauleg", ["tau_pt", "tau_eta"]),
     ("ditaujet_tauleg", ["tau_pt", "tau_eta"]),
     ("ditaujet_jetleg", ["jet_pt", "jet_eta"]),
 ]

@@ -5,6 +5,7 @@ ROOT.gROOT.SetBatch(True)
 
 import argparse
 from plotter_from_ntuplizer import obtain_histograms
+from channel_to_HLT_map import channel_to_HLT_map
 
 
 parser = argparse.ArgumentParser(description='Skim full tuple.')
@@ -36,6 +37,7 @@ def plot_comparison(h_num_os, h_den_os, plottingVariable, channels, add_to_label
     channels = channels if not all([elem == channels[0] for elem in channels]) else [channels[0]]
 
     print("Plotting {} of {}".format(plottingVariable, ", ".join(channels)))
+
     ROOT.gStyle.SetOptStat(0); ROOT.gStyle.SetTextFont(42)
     c = ROOT.TCanvas("c", "", 800, 700)
 
@@ -78,13 +80,14 @@ def plot_comparison(h_num_os, h_den_os, plottingVariable, channels, add_to_label
 
     label = ROOT.TLatex(); label.SetNDC(True)
     if(plottingVariable == "tau_pt" or plottingVariable=="tau_l1pt"):
-        label.DrawLatex(0.8, 0.03, "#tau_{pT}")
+        label.DrawLatex(0.8, 0.03, "p_{T}^{#tau}") ##tau_{pT}")
     elif(plottingVariable == "jet_pt"):
-        label.DrawLatex(0.8, 0.03, "jet_{pT}")
+        label.DrawLatex(0.8, 0.03, "p_{T}^{jet}") #jet_{pT}")
     elif(plottingVariable == "jet_eta"):
         label.DrawLatex(0.8, 0.03, "#eta_{jet}")
     else:
         label.DrawLatex(0.8, 0.03, "#eta_{#tau}")
+
     label.SetTextSize(0.040)
     label.DrawLatex(0.100, 0.920, "#bf{CMS Run3 Data}")
     
@@ -96,8 +99,6 @@ def plot_comparison(h_num_os, h_den_os, plottingVariable, channels, add_to_label
     # leg.SetTextSize(0.045)
 
     leg.Draw()
-    # add new leg
-    # make user friendly
 
     combined_name = "_".join(channels)
     c.SaveAs("%s_%s_%s.pdf" % (plotName, combined_name, plottingVariable))
