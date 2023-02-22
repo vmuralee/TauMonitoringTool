@@ -6,16 +6,16 @@ from plot_comparison import plot_comparison
 # folders = ["/eos/user/j/jleonhol/muonNanoAOD2022D_notrigobj/", "/eos/user/j/jleonhol/muonNanoAOD2022E/"]
 #folders = ["/eos/user/j/jleonhol/muonNanoAOD2022D_notrigobj/", "/eos/user/j/jleonhol/muonNanoAOD2022E/", "/eos/user/j/jleonhol/muonNanoAOD2022F/"]
 # folders = ["/eos/user/j/jleonhol/muonNanoAOD2022F/", "/eos/user/j/jleonhol/muonNanoAOD2022F/"]
-folders = [["/eos/user/j/jleonhol/muonNanoAOD2022C_notrigobj/", "/eos/user/j/jleonhol/muonNanoAOD2022D_notrigobj/"], "/eos/user/j/jleonhol/muonNanoAOD2022E/", "/eos/user/j/jleonhol/muonNanoAOD2022F/", "/eos/user/j/jleonhol/muonNanoAOD2022G_V11/"]
+folders = [["/eos/user/j/jleonhol/picoNtuples/DY/", "/eos/user/b/ballmond/NanoAOD_DY/"], ["/eos/user/j/jleonhol/muonNanoAOD2022C_notrigobj/", "/eos/user/j/jleonhol/muonNanoAOD2022D_notrigobj/", "/eos/user/j/jleonhol/muonNanoAOD2022E/", "/eos/user/j/jleonhol/muonNanoAOD2022F/", "/eos/user/j/jleonhol/muonNanoAOD2022G_V11/"]]
 # legends = ["w/ offl-trigger matching", "w/o offl-trigger matching"]
-legends = ["2022preTS1", "2022E", "2022F", "2022G", ]
+legends = ["DY + 2 jets", "Muon 2022"]
 # legends = ["Run < 361514", "Run >= 361514"]
 
 # additional_selections = ["run < 361514", "run >= 361514"]
 additional_selections = []
 
-plotname = "comparison_muon2022preDEFG"
-label = "2022 C/D/E/F/G"
+plotname = "comparison_muon2022datamc"
+label = "2022"
 
 def create_rdataframe(folders=None, inputFiles=None):
     if not inputFiles:

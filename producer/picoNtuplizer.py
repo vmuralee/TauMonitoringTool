@@ -197,14 +197,14 @@ if __name__ == '__main__':
         branches += [
             "Tau_genPartFlav", "Tau_genPartIdx",
             "Muon_genPartIdx", "Muon_genPartFlav",
-            "Electron_genPartIdx", "Electron_genPartFlav", 
+            #"Electron_genPartIdx", "Electron_genPartFlav", 
             "Jet_genJetIdx",
             "genWeight", "Pileup_nTrueInt"
         ]
     branch_list = ROOT.vector('string')()
     for branch_name in branches:
         branch_list.push_back(branch_name)
-    try:
-        df.Snapshot("Events", outFile+'.root', branch_list)
-    except:
-        print("Error when running with files: " + ",".join(inputFiles_run3))
+    # try:
+    df.Snapshot("Events", outFile+'.root', branch_list)
+    # except:
+        # print("Error when running with files: " + ",".join(inputFiles_run3))

@@ -53,7 +53,10 @@ def plot_comparison(h_num_os, h_den_os, plottingVariable, channels, add_to_label
     leg = ROOT.TLegend(0.55, 0.15, 0.90, 0.15 + 0.05 * len(legends))
 
     histos = []
-    for iplot, (h_num_os_A, h_den_os_A, legend) in enumerate(zip(h_num_os, h_den_os, legends)):
+    iplot = 0
+    for (h_num_os_A, h_den_os_A, legend) in zip(h_num_os, h_den_os, legends):
+        if iplot == 3:
+            iplot += 1
         gr_A = ROOT.TGraphAsymmErrors(h_num_os_A.GetPtr(), h_den_os_A.GetPtr(), "n")
         gr_A.SetTitle("")
         gr_A.SetLineColor(2 + 1 * iplot) # this is red
@@ -64,6 +67,7 @@ def plot_comparison(h_num_os, h_den_os, plottingVariable, channels, add_to_label
         histos.append(gr_A)
         mg.Add(histos[-1])
         leg.AddEntry(histos[-1], legend)
+        iplot += 1
     leg.Draw()
 
     # "P" forces the use of the chosen marker
