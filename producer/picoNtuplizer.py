@@ -4,7 +4,7 @@ import sys
 import ROOT
 
 # Enable multi-threading                                                                                                                                                                                    
-ROOT.ROOT.EnableImplicitMT()
+# ROOT.ROOT.EnableImplicitMT()
 ROOT.gROOT.SetBatch(True)
 
 core_dir = str(os.getcwd()).split('producer')
@@ -13,14 +13,25 @@ Trigger_header_path = os.path.join(core_dir[0] + '/interface' + os.sep, "picoNtu
 
 ROOT.gInterpreter.Declare('#include "{}"'.format(Trigger_header_path))
 
-sys.path.insert(1, core_dir[0]+'/python')
+sys.path.insert(1, core_dir[0]+"/python")
 
 from RooPlottingTool import *
 
+import argparse
+parser = argparse.ArgumentParser(description='Ntuplizer options')
+parser.add_argument('-v','--tauid_version', choices=['2p1', '2p5'], dest="tauid_version", default='2p5')
+parser.add_argument('-o','--outfile', dest='outfile')
+parser.add_argument('-i','--inputFiles', dest='inputFiles', default = False)
+parser.add_argument('-mc', '--isMC', action='store_true', default = False)
+options = parser.parse_args()
+
 # select the version
-TauID_ver = sys.argv[1]
-outFile   = sys.argv[2]
-useFiles = sys.argv[3] #8102, 8136, or filename.txt
+TauID_ver = options.tauid_version
+outFile   = options.outfile
+useFiles  = options.inputFiles #8102, 8136, or filename.txt
+isMC  = options.isMC
+
+print(TauID_ver, outFile, useFiles)
 
 def create_rdataframe(folders, inputFiles=None):
     if not inputFiles:
@@ -130,7 +141,6 @@ def obtain_picontuple(df):
     return df, branches
 
 
-
 if __name__ == '__main__':
 
     #inputFiles = (f'/eos/cms/store/group/dpg_trigger/comm_trigger/TriggerStudiesGroup/STEAM/anayak/2022NanoAOD/SingleMuonV1/Files2/nano_aod_{i}.root' for i in range(0,79))
@@ -164,11 +174,15 @@ if __name__ == '__main__':
       print("Using files in {}".format(useFiles))
       folders = []
       inputFiles_run3 = []
-      #with open('Run3files.txt') as f:
+
       with open(useFiles) as f:
         for line in f:
           line = line.replace('\n',"") # trim newline character
-          inputFiles_run3.append('root://cmsxrootd.fnal.gov/'+line) # prepend with redirector
+          if "root://" not in line and not line.startswith("/eos"):
+            inputFiles_run3.append('root://cmsxrootd.fnal.gov/'+line) # prepend with redirector
+          else:
+            inputFiles_run3.append(line)
+      print(inputFiles_run3)
       df = ROOT.RDataFrame("Events", tuple(inputFiles_run3))
 
     else:
@@ -178,12 +192,24 @@ if __name__ == '__main__':
     df, branches = obtain_picontuple(df)
     branches.sort()
     branches = [
+        "event", "run",
         "nTau", "Tau_pt", "Tau_eta", "Tau_phi", "Tau_mass",
         "nMuon", "Muon_pt", "Muon_eta", "Muon_phi", "Muon_mass",
         "nJet", "Jet_pt", "Jet_eta", "Jet_phi", "Jet_mass",
-        "nTrigObj", "TrigObj_l1pt", "TrigObj_l1iso"] + branches
+        "nTrigObj", "TrigObj_id", "TrigObj_filterBits", "TrigObj_pt", "TrigObj_eta", "TrigObj_phi",
+        "TrigObj_l1pt", "TrigObj_l1iso"] + branches
+    if isMC:
+        branches += [
+            "Tau_genPartFlav", "Tau_genPartIdx",
+            "Muon_genPartIdx", "Muon_genPartFlav",
+            #"Electron_genPartIdx", "Electron_genPartFlav", 
+            "Jet_genJetIdx",
+            "genWeight", "Pileup_nTrueInt"
+        ]
     branch_list = ROOT.vector('string')()
     for branch_name in branches:
         branch_list.push_back(branch_name)
-
-    df.Snapshot("Events", './'+outFile+'.root', branch_list)
+    # try:
+    df.Snapshot("Events", outFile+'.root', branch_list)
+    # except:
+        # print("Error when running with files: " + ",".join(inputFiles_run3))

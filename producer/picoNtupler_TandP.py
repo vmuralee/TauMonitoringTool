@@ -178,7 +178,7 @@ def plot(h_num_os, h_den_os, plottingVariable, channel, add_to_label, plotName):
     else:
         label.DrawLatex(0.8, 0.03, "#eta_{#tau}")
     label.SetTextSize(0.040); label.DrawLatex(0.100, 0.920, "#bf{CMS Run3 Data}")
-    label.SetTextSize(0.030); label.DrawLatex(0.630, 0.920, "#sqrt{s} = 13.6 TeV, %s" % add_to_label)
+    label.SetTextSize(0.030); label.SetTextAlign(31); label.DrawLatex(0.90, 0.920, "#sqrt{s} = 13.6 TeV, %s" % add_to_label)
 
     c.SaveAs("%s_%s_%s.pdf" % (plotName, channel, plottingVariable))
     c.SaveAs("%s_%s_%s.png" % (plotName, channel, plottingVariable))

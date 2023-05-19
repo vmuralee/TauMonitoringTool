@@ -30,14 +30,14 @@ possibleChannels = ["ditau", "mutau", "etau", \
                     "ditaujet_tauleg", "ditaujet_jetleg",\
                     "VBFditau_old", "VBFditau_Run3_tauleg"]
 
-def plot_comparison(h_num_os_A, h_den_os_A, \
-                    h_num_os_B, h_den_os_B, \
-                    plottingVariable, \
-                    channel_A, channel_B, \
-                    add_to_label, plotName, \
-                    legends=["v2p1", "v2p5"]):
+def plot_comparison(h_num_os, h_den_os, plottingVariable, channels, add_to_label, plotName, legends=["v2p1", "v2p5"]):
 
-    print("Plotting {} of {} and {}".format(plottingVariable, channel_A, channel_B))
+    assert len(channels) == 1 or len(channels) == len(h_num_os)
+    assert len(h_num_os) == len(legends)
+    channels = channels if not all([elem == channels[0] for elem in channels]) else [channels[0]]
+
+    print("Plotting {} of {}".format(plottingVariable, ", ".join(channels)))
+
     ROOT.gStyle.SetOptStat(0); ROOT.gStyle.SetTextFont(42)
     c = ROOT.TCanvas("c", "", 800, 700)
 
@@ -50,22 +50,28 @@ def plot_comparison(h_num_os_A, h_den_os_A, \
     # the graphs are not changed
     # https://root.cern.ch/doc/master/classTGraphAsymmErrors.html#a37a202762b286cf4c7f5d34046be8c0b
     # use "nv" to get per-bin efficiency printed to terminal
-    gr_A = ROOT.TGraphAsymmErrors(h_num_os_A.GetPtr(),h_den_os_A.GetPtr(), "n")
-    gr_A.SetTitle("")
-    gr_A.SetLineColor(2) # this is red
-    gr_A.SetMarkerStyle(21) # this is a filled box
-    gr_A.SetMarkerSize(1.5)
 
+    # add legend
+    leg = ROOT.TLegend(0.55, 0.15, 0.90, 0.15 + 0.05 * len(legends))
 
-    gr_B = ROOT.TGraphAsymmErrors(h_num_os_B.GetPtr(),h_den_os_B.GetPtr(), "n")
-    gr_B.SetTitle("")
-    gr_B.SetLineColor(9) # this is blue
-    gr_B.SetMarkerStyle(20) # this is a filled circle
-    gr_B.SetMarkerColor(12) # this is a light grey
-    gr_B.SetMarkerSize(1.3)
+    histos = []
+    iplot = 0
+    for (h_num_os_A, h_den_os_A, legend) in zip(h_num_os, h_den_os, legends):
+        if iplot == 3:
+            iplot += 1
+        gr_A = ROOT.TGraphAsymmErrors(h_num_os_A.GetPtr(), h_den_os_A.GetPtr(), "n")
+        gr_A.SetTitle("")
+        gr_A.SetLineColor(2 + 1 * iplot) # this is red
+        gr_A.SetMarkerColor(2 + 1 * iplot) # this is red
+        #gr_A.SetMarkerColor(2 + 2 * iplot) # this is red
+        gr_A.SetMarkerStyle(24 + iplot) # this is a filled box
+        gr_A.SetMarkerSize(1.5)
+        histos.append(gr_A)
+        mg.Add(histos[-1])
+        leg.AddEntry(histos[-1], legend)
+        iplot += 1
+    leg.Draw()
 
-    mg.Add(gr_A)
-    mg.Add(gr_B)
     # "P" forces the use of the chosen marker
     # "A" draws without the axis 
     # somehow the plot is not drawn without this argument
@@ -81,20 +87,27 @@ def plot_comparison(h_num_os_A, h_den_os_A, \
         label.DrawLatex(0.8, 0.03, "#eta_{jet}")
     else:
         label.DrawLatex(0.8, 0.03, "#eta_{#tau}")
-    label.SetTextSize(0.040); label.DrawLatex(0.100, 0.920, "#bf{CMS Run3 Data}")
-    label.SetTextSize(0.030); label.DrawLatex(0.630, 0.920, "#sqrt{s} = 13.6 TeV, %s" % add_to_label)
-    label.SetTextSize(0.025); label.DrawLatex(0.110, 0.870, channel_to_HLT_map[channel_A])
 
-    # add legend
-    leg = ROOT.TLegend(0.60, 0.15, 0.90, 0.25)
-    leg.SetTextSize(0.025)
-    leg.AddEntry(gr_A, legends[0])
-    leg.AddEntry(gr_B, legends[1])
+    label.SetTextSize(0.040)
+    label.DrawLatex(0.100, 0.920, "#bf{CMS Run3 Data}")
+    
+    label.SetTextSize(0.030) 
+    label.SetTextAlign(31)
+    label.DrawLatex(0.9, 0.920, "#sqrt{s} = 13.6 TeV, %s" % add_to_label)
+
+
+    # leg.SetTextSize(0.045)
+
     leg.Draw()
 
-    combined_name = channel_A + "_" + channel_B
+    combined_name = "_".join(channels)
     c.SaveAs("%s_%s_%s.pdf" % (plotName, combined_name, plottingVariable))
     c.SaveAs("%s_%s_%s.png" % (plotName, combined_name, plottingVariable))
+
+    tf = ROOT.TFile.Open("%s_%s_%s.root" % (plotName, combined_name, plottingVariable), "RECREATE")
+    for histo, legend in zip(histos, legends):
+        histo.Write(legend.replace(" ", "_"))
+    tf.Close()
 
 
 if __name__ == "__main__":
