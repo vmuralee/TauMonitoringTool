@@ -10,8 +10,10 @@ ROOT.gROOT.SetBatch(True)
 core_dir = str(os.getcwd()).split('producer')
 
 Trigger_header_path = os.path.join(core_dir[0] + '/interface' + os.sep, "picoNtupler.h")
+Trigger_pu_header_path = os.path.join(core_dir[0] + '/interface' + os.sep, "PileupProvider.h")
 
 ROOT.gInterpreter.Declare('#include "{}"'.format(Trigger_header_path))
+ROOT.gInterpreter.Declare('#include "{}"'.format(Trigger_pu_header_path))
 
 sys.path.insert(1, core_dir[0]+"/python")
 
@@ -23,6 +25,7 @@ parser.add_argument('-v','--tauid_version', choices=['2p1', '2p5'], dest="tauid_
 parser.add_argument('-o','--outfile', dest='outfile')
 parser.add_argument('-i','--inputFiles', dest='inputFiles', default = False)
 parser.add_argument('-mc', '--isMC', action='store_true', default = False)
+parser.add_argument('-pu','--pufile', dest='pufile', default = False)
 options = parser.parse_args()
 
 # select the version
@@ -45,6 +48,17 @@ def create_rdataframe(folders, inputFiles=None):
 def obtain_picontuple(df):
 
     branches = []
+    if isMC:
+        df = df.Define('genEventWeight',"1.")
+    else:
+        df = df.Define('genEventWeight',"1.")
+
+    if isMC:
+        data_pu_file = ROOT.TFile(args.pu, 'READ')
+        data_pu = data_pu_file.Get('pileup')
+        mc_pu = df.Histo1D(ROOT.RDF.TH1DModel(data_pu), 'PV_npvs')
+        ROOT.PileUpWeightProvider.Initialize(data_pu, mc_pu.GetPtr())
+        df = df.Define('weight', "PileUpWeightProvider::GetDefault().GetWeight(PV_npvsGood) * genEventWeight")
 
     # Tag And Probe selection {Obtaining high pure Z -> mu tau Events}
     ## select muon (Tag) candidate

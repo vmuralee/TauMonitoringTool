@@ -1,9 +1,26 @@
+# Setup
+```
+cmsrel CMSSW_12_6_X
+cd CMSSW_12_6_X/src
+cmsenv
+cd TauMonitoringTool/producer
+```
 # To produce a pico ntuple
-To produce the pico ntuple using the `picoNtuplizer.py` with arguments of  2p1(2p5) depends on the old tauID(new) and output ntuple name \
-```python3 picoNtuplizer.py tauIDversion output_name list_of_input_files.txt```
-TauID versions 2p1 and 2p5 are supported. If you're input file list is named "input_files.txt" use the following command.
-```python3 picoNtuplizer.py 2p5 picoNtuple input_files.txt```
 
+The ***runscript.py*** allows to prepare the jobs for local submitting. Obtain nanoAOD dataset either from DAS or any local storage. If it is in DAS you can obtain list of files using following commands,
+```
+voms-proxy-init -voms cms
+dasgoclient --query 'file dataset=<Dataset Name>' > RunFiles.txt
+```
+You can either run over TauID 2p1 or 2p5, by default 2p5 is used. If you need to change the tau ID make changes in the runscript.py. To prepare jobs for use the following command lines,
+```
+python3 runscript.py RunFiles.txt outputfile 5
+```
+which prepare shell script running over dataset with files splited by 5. You can change the splitting according to you, it is more safe to use maximum splitting range of 10. You can submit jobs by
+```
+bash localjob_submit.sh
+```
+After running picontuples will produce for corresponding dataset.  
 # To produce the plot
 The following command generates a plot of tau pT for the ditau-monitoring path, and saves it to a png and pdf file.  \
 
