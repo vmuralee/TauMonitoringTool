@@ -7,7 +7,7 @@ cd TauMonitoringTool/producer
 ```
 # To produce a pico ntuple
 
-The ***runscript.py*** allows to prepare the jobs for local submitting. Obtain nanoAOD dataset either from DAS or any local storage. If it is in DAS you can obtain list of files using following commands,
+The **runscript.py** allows to prepare the jobs for local submitting. Obtain nanoAOD dataset either from DAS or any local storage. If it is in DAS you can obtain list of files using following commands,
 ```
 voms-proxy-init -voms cms
 dasgoclient --query 'file dataset=<Dataset Name>' > RunFiles.txt
@@ -43,20 +43,18 @@ The `channel` is a shorthand to select a supported tau HLT. Available channels a
 `plot` takes any string argument and prepends it to your generated graph file.
 Finally, `var` can be set to `tau_pt` or `tau_eta` and switches which variable is plotted (jet_pt and jet_eta are not supported for all paths).  
 
-# Additional functionality
-`plot_comparison.py` is made to compare either the same path on different datasets or different paths on the same dataset.
-For now, the legend lable of the script is hardcoded, so the first sample is always written as using DeepTau v2p1
-and the second as using DeepTau v2p5.
-To use plot_comparison.py in this way, first produce two different ntuples using picoNtuplizer.py with 2p1 and 2p5, then run the following command.
+# plot macros for comparing different efficiency graphs
+`plotmacro_2inputs.py` and `plotmacro_3inputs.py` are made to compare either the same path on different datasets or different paths on the same dataset.
+These macros are has the plotting style of CMS. The legend names can changed in the code itself. 
 ```
-python3 plot_comparison.py \
+python3 plotmacro_2inputs.py \
 --input_A Fill8102_DeepTauV2p1_New.root \
 --input_B Fill8136_DeepTauV2p5_New.root \
---channel_A VBFditau_Run3_tauleg \
---channel_B VBFditau_Run3_tauleg \
---run "Compare DeepTau" --plot testplot --var tau_pt
+--channel_A ditau \
+--channel_B ditau \
+--run "Run2022 vs Run 2023" --plot testplot --var tau_pt
 ```
-
+If  the **var** argument can be *tau_pt*,*tau_eta* and *tau_phi*. In case of *tau_eta* one has to enable **--iseta** . 
 # Summary of scripts in `producer`
 picoNtuplizer.py makes ntuples
 
