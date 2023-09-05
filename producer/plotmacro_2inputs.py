@@ -34,7 +34,7 @@ possibleChannels = ["ditau", "mutau", "etau", \
                     "ditaujet_tauleg", "ditaujet_jetleg",\
                     "VBFditau_old", "VBFditau_Run3_tauleg"]
 
-def plot_comparison(h_num_os, h_den_os, plottingVariable, channels, add_to_label, plotName, legends=["run 2022","run 2023"]):
+def plot_comparison(h_num_os, h_den_os, plottingVariable, channels, add_to_label, plotName, legends=["run 2023C","run 2023D"]):
     assert len(channels) == 1 or len(channels) == len(h_num_os)
     assert len(h_num_os) == len(legends)
     channels = channels if not all([elem == channels[0] for elem in channels]) else [channels[0]]

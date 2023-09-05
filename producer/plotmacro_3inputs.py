@@ -133,7 +133,6 @@ if __name__ == "__main__":
     channel_C = args.channel_C
     plottingVariable = args.var
     
-    print(args.input_A, args.input_B)
     df_A = ROOT.RDataFrame("Events",tuple(args.input_A))
     #df_A = df_A.Filter('run < 370128','before dd')
     h_num_os_A, h_den_os_A = obtain_histograms(df_A, channel_A, args.iseta, plottingVariable)

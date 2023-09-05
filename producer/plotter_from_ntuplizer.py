@@ -29,11 +29,14 @@ possibleChannels = ["ditau", "mutau", "etau", \
 
 def obtain_histograms(df, channel, iseta, plottingVariable, additional_selection=None, isMC=False):
 
+    channel_th = {"ditau":50,"mutau":35,"etau":40}
     if additional_selection:
         df = df.Filter(additional_selection)
 
     df = df.Filter("Muon_Index >= 0 && muon_iso < 0.1 && Tau_goodid == 1")
-
+    if iseta:
+        selection_th = f'Tau_pt[Tau_Index] > {channel_th[channel]}'
+        df = df.Filter(selection_th)
     if channel != "ditaujet_jetleg":
 
         if not isMC:
@@ -44,8 +47,7 @@ def obtain_histograms(df, channel, iseta, plottingVariable, additional_selection
 
         assert "jet" not in plottingVariable
         df = df.Filter("passZmass == 1").Define("tau_pt", "Tau_pt[Tau_Index]").Define("tau_eta", "Tau_eta[Tau_Index]")
-        if iseta:
-          df = df.Filter('tau_pt > 50')
+        
         h_den_os = df.Histo1D(CreateHistModel("denominator", iseta), plottingVariable)
         # numerator histogram
         if channel == 'ditau':
@@ -59,7 +61,10 @@ def obtain_histograms(df, channel, iseta, plottingVariable, additional_selection
             h_num_os = df.Filter("pass_mutau >= 0 && \
                 HLT_IsoMu20_eta2p1_LooseDeepTauPFTauHPS27_eta2p1_CrossL1 == 1").Histo1D( \
                 CreateHistModel("numerator", iseta), plottingVariable, 'new_weight')
-
+        elif channel == 'etau':
+            h_num_os = df.Filter("pass_mutau >= 0 && TrigObj_l1pt.at(pass_mutau) >= 26 && TrigObj_l1iso.at(pass_mutau) > 0 && TrigObj_pt.at(pass_mutau) >= 35 &&\
+                HLT_IsoMu20_eta2p1_LooseDeepTauPFTauHPS27_eta2p1_CrossL1 == 1").Histo1D( \
+                CreateHistModel("numerator", iseta), plottingVariable, 'new_weight')
         elif channel == 'VBFasymtau_uppertauleg':
             h_num_os = df.Filter("pass_VBFasymtau_uppertauleg >= 0 && \
                          HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1 == 1"\

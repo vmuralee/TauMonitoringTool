@@ -4,7 +4,7 @@ from array import array
 
 def CreateBins(is_eta, is_jet=False):
     if is_eta:
-        return np.arange(-3,3,0.5)
+        return np.arange(-2.5,3.5,1.0)
     elif not is_jet:
         bins = np.arange(20, 40, step=4)
         bins = np.append(bins, np.arange(40, 60, step=10))
